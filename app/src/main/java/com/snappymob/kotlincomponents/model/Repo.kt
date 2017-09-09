@@ -10,28 +10,28 @@ import com.google.gson.annotations.SerializedName
         Index("owner_login")),
         primaryKeys = arrayOf("name", "owner_login"))
 data class Repo(
-        val id: Int,
+        var id: Int = 0,
         @SerializedName("name")
-        val name: String,
+        var name: String = "",
         @SerializedName("full_name")
-        val fullName: String,
+        var fullName: String = "",
         @SerializedName("description")
-        val description: String,
+        var description: String = "",
         @SerializedName("owner")
         @Embedded(prefix = "owner_")
-        val owner: Owner,
+        var owner: Owner? = null,
         @SerializedName("stargazers_count")
-        val stars: Int
+        var stars: Int = 0
 ) {
 
     data class Owner(
             @SerializedName("login")
-            val login: String?,
+            var login: String? = "",
             @SerializedName("url")
-            val url: String?
+            var url: String? = ""
     )
 
     companion object {
-        val UNKNOWN_ID = -1
+        var UNKNOWN_ID = -1
     }
 }
