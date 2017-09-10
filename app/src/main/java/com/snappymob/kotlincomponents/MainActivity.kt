@@ -6,10 +6,13 @@ import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProviders
 import android.arch.persistence.room.Room
 import android.os.Bundle
+import android.support.v7.widget.LinearLayoutManager
 import android.util.ArrayMap
 import android.util.Log
 import android.widget.Toast
+import com.snappymob.kotlincomponents.adapters.ReposAdapter
 import com.snappymob.kotlincomponents.db.GithubDb
+import com.snappymob.kotlincomponents.model.Repo
 import com.snappymob.kotlincomponents.network.AppExecutors
 import com.snappymob.kotlincomponents.network.Status
 import com.snappymob.kotlincomponents.repository.RepoRepository
@@ -43,7 +46,6 @@ class MainActivity : LifecycleActivity() {
             val githubDb = Room.databaseBuilder(applicationContext,
                     GithubDb::class.java, "app-db").allowMainThreadQueries()
                     .build()
-
             val appExecutors = AppExecutors()
 
             val repo = RepoViewModel(RepoRepository(githubDb.repoDao(), retrofit, appExecutors))
@@ -52,6 +54,11 @@ class MainActivity : LifecycleActivity() {
 
             val factory = GithubViewModelFactory(arrayMap)
             val repoViewModel = ViewModelProviders.of(this, factory).get(RepoViewModel::class.java)
+
+            val reposAdapter = ReposAdapter(this, ArrayList())
+            recyclerViewRepos.adapter = reposAdapter
+            recyclerViewRepos.layoutManager = LinearLayoutManager(this)
+
             buttonSearch.setOnClickListener({
                 if (editTextUser.text.length > 3) {
                     repoViewModel.loadRepos(editTextUser.text.toString())?.observe(this, Observer {
@@ -59,6 +66,7 @@ class MainActivity : LifecycleActivity() {
                             when (it.status) {
                                 Status.SUCCESS -> {
                                     Log.e("Status", "Success")
+                                    reposAdapter.updateDataSet(it.data as ArrayList<Repo>)
                                 }
                                 Status.ERROR -> {
                                     Log.e("Status", "Error ${it.message}")
