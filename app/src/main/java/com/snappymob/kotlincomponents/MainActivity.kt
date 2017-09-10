@@ -19,7 +19,6 @@ import com.snappymob.kotlincomponents.viewmodel.RepoViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import javax.inject.Provider
 
 
 class MainActivity : LifecycleActivity() {
@@ -47,9 +46,9 @@ class MainActivity : LifecycleActivity() {
             val appExecutors = AppExecutors()
 
             val repo = RepoViewModel(RepoRepository(githubDb.repoDao(), retrofit, appExecutors))
-            val provider = Provider<RepoViewModel>(function = {repo})
-            val arrayMap = ArrayMap<Class<out ViewModel>, Provider<out ViewModel>>()
-            arrayMap.put(RepoViewModel::class.java, provider)
+//            val provider = Provider<RepoViewModel>(function = {repo})
+            val arrayMap = ArrayMap<Class<out ViewModel>, ViewModel>()
+            arrayMap.put(RepoViewModel::class.java, repo)
 
             val factory = GithubViewModelFactory(arrayMap)
             val repoViewModel = ViewModelProviders.of(this, factory).get(RepoViewModel::class.java)
