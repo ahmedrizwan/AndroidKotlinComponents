@@ -47,7 +47,6 @@ class MainActivity : LifecycleActivity() {
             val appExecutors = AppExecutors()
 
             val repo = RepoViewModel(RepoRepository(githubDb.repoDao(), retrofit, appExecutors))
-//            val provider = Provider<RepoViewModel>(function = {repo})
             val arrayMap = ArrayMap<Class<out ViewModel>, ViewModel>()
             arrayMap.put(RepoViewModel::class.java, repo)
 

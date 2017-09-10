@@ -49,6 +49,7 @@ dependencies {
     implementation "android.arch.lifecycle:runtime:$arch_version"
     implementation "android.arch.lifecycle:extensions:$arch_version"
     kapt "android.arch.lifecycle:compiler:$arch_version"
+    implementation 'com.android.support:recyclerview-v7:26.0.2'
 }
 
 
