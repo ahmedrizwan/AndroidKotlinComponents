@@ -54,7 +54,7 @@ constructor(private val appExecutors: AppExecutors) {
         }
     }
 
-    protected fun onFetchFailed() {}
+    protected open fun onFetchFailed() {}
 
     fun asLiveData(): LiveData<Resource<ResultType>> {
         return result

@@ -12,11 +12,11 @@ import com.google.gson.annotations.SerializedName
 data class Repo(
         var id: Int = 0,
         @SerializedName("name")
-        var name: String = "",
+        var name: String? = "",
         @SerializedName("full_name")
-        var fullName: String = "",
+        var fullName: String? = "",
         @SerializedName("description")
-        var description: String = "",
+        var description: String? = "",
         @SerializedName("owner")
         @Embedded(prefix = "owner_")
         var owner: Owner? = null,
