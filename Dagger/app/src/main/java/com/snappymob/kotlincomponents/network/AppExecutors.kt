@@ -2,13 +2,15 @@ package com.snappymob.kotlincomponents.network
 
 import android.os.Handler
 import android.os.Looper
-
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
+import javax.inject.Singleton
 
-class AppExecutors @JvmOverloads constructor(private val diskIO: Executor = Executors.newSingleThreadExecutor(),
-                                             private val networkIO: Executor = Executors.newFixedThreadPool(3),
-                                             private val mainThread: Executor = MainThreadExecutor()) {
+@Singleton
+class AppExecutors
+constructor(private val diskIO: Executor = Executors.newSingleThreadExecutor(),
+            private val networkIO: Executor = Executors.newFixedThreadPool(3),
+            private val mainThread: Executor = MainThreadExecutor()) {
 
     fun diskIO(): Executor {
         return diskIO
