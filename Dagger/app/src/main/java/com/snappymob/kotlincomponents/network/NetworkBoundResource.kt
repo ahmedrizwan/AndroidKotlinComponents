@@ -6,7 +6,7 @@ import android.support.annotation.MainThread
 import android.support.annotation.WorkerThread
 
 abstract class NetworkBoundResource<ResultType, RequestType> @MainThread
-constructor(private val appExecutors: AppExecutors) {
+constructor(private val appThreadExecutors: AppThreadExecutors) {
 
     private val result = MediatorLiveData<Resource<ResultType>>()
 
@@ -33,11 +33,11 @@ constructor(private val appExecutors: AppExecutors) {
             result.removeSource(dbSource)
 
             if (response!!.isSuccessful) {
-                appExecutors
+                appThreadExecutors
                         .diskIO()
                         .execute {
                             processResponse(response)?.let { saveCallResult(it) }
-                            appExecutors.mainThread()
+                            appThreadExecutors.mainThread()
                                     .execute {
                                         // we specially request a new live data,
                                         // otherwise we will get immediately last cached value,
