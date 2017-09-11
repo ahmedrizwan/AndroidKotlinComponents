@@ -2,7 +2,7 @@ package com.snappymob.kotlincomponents.di
 
 import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProvider
-import com.snappymob.kotlincomponents.viewmodel.GithubViewModelFactory
+import com.snappymob.kotlincomponents.viewmodel.ViewModelFactory
 import com.snappymob.kotlincomponents.viewmodel.RepoViewModel
 import dagger.Binds
 import dagger.Module
@@ -21,5 +21,5 @@ abstract class ViewModelModule {
     internal abstract fun bindRepoViewModel(repoViewModel: RepoViewModel): ViewModel
 
     @Binds
-    internal abstract fun bindViewModelFactory(factory: GithubViewModelFactory): ViewModelProvider.Factory
+    internal abstract fun bindViewModelFactory(factory: ViewModelFactory): ViewModelProvider.Factory
 }
