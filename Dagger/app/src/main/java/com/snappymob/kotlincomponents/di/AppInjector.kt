@@ -33,33 +33,9 @@ object AppInjector {
                 .build()
                 .inject(app)
 
-        app.registerActivityLifecycleCallbacks(object : Application.ActivityLifecycleCallbacks {
-            override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle) {
-                handleActivity(activity)
-            }
-
-            override fun onActivityStarted(activity: Activity) {
-
-            }
-
-            override fun onActivityResumed(activity: Activity) {
-
-            }
-
-            override fun onActivityPaused(activity: Activity) {
-
-            }
-
-            override fun onActivityStopped(activity: Activity) {
-
-            }
-
-            override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {
-
-            }
-
-            override fun onActivityDestroyed(activity: Activity) {
-
+        app.registerActivityLifecycleCallbacks(object : ActivityLifecycleCallbacks() {
+            override fun onActivityCreated(p0: Activity?, p1: Bundle?) {
+                p0?.let { handleActivity(it) }
             }
         })
     }
@@ -67,6 +43,29 @@ object AppInjector {
     private fun handleActivity(activity: Activity) {
         if (activity is LifecycleActivity) {
             AndroidInjection.inject(activity)
+        }
+    }
+
+    abstract class ActivityLifecycleCallbacks : Application.ActivityLifecycleCallbacks {
+        override fun onActivityPaused(p0: Activity?) {
+        }
+
+        override fun onActivityResumed(p0: Activity?) {
+        }
+
+        override fun onActivityStarted(p0: Activity?) {
+        }
+
+        override fun onActivityDestroyed(p0: Activity?) {
+        }
+
+        override fun onActivitySaveInstanceState(p0: Activity?, p1: Bundle?) {
+        }
+
+        override fun onActivityStopped(p0: Activity?) {
+        }
+
+        override fun onActivityCreated(p0: Activity?, p1: Bundle?) {
         }
     }
 }
