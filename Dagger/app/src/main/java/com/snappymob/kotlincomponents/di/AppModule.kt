@@ -31,7 +31,7 @@ internal class AppModule {
     @Singleton
     @Provides
     fun provideDb(app: Application): GithubDb {
-        return Room.databaseBuilder(app, GithubDb::class.java, "github.db").build()
+        return Room.databaseBuilder(app, GithubDb::class.java, "app-db").build()
     }
 
 
