@@ -2,6 +2,7 @@ package com.snappymob.kotlincomponents.viewmodel
 
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.ViewModel
+import android.util.ArrayMap
 import com.snappymob.kotlincomponents.model.Repo
 import com.snappymob.kotlincomponents.network.Resource
 import com.snappymob.kotlincomponents.repository.RepoRepository
@@ -16,11 +17,11 @@ class RepoViewModel
 @Inject constructor(repository: RepoRepository) : ViewModel() {
     var repo: LiveData<Resource<List<Repo>>>? = null
     val repoRepository = repository
-
+    val map: ArrayMap<String, LiveData<Resource<List<Repo>>>> = ArrayMap()
     fun loadRepos(username: String): LiveData<Resource<List<Repo>>>? {
-        if (repo == null) {
-            repo = repoRepository.loadRepos(username)
+        if(map[username] == null){
+            map[username] = repoRepository.loadRepos(username)
         }
-        return repo
+        return map[username]
     }
 }

@@ -6,7 +6,7 @@ import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
-import android.util.Log
+import android.view.View
 import android.widget.Toast
 import com.snappymob.kotlincomponents.adapters.ReposAdapter
 import com.snappymob.kotlincomponents.model.Repo
@@ -23,6 +23,7 @@ class MainActivity : LifecycleActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        val allViews = arrayOf(recyclerViewRepos, progressBar, textViewError)
 
         viewModelFactory.let {
             val repoViewModel = ViewModelProviders.of(this, it).get(RepoViewModel::class.java)
@@ -34,16 +35,22 @@ class MainActivity : LifecycleActivity() {
                 if (editTextUser.text.length > 3) {
                     repoViewModel.loadRepos(editTextUser.text.toString())?.observe(this, Observer {
                         it?.let {
+                            allViews.forEach { view -> view.visibility = View.GONE }
+
                             when (it.status) {
+
                                 Status.SUCCESS -> {
-                                    Log.e("Status", "Success")
+                                    recyclerViewRepos.visibility = View.VISIBLE
                                     reposAdapter.updateDataSet(it.data as ArrayList<Repo>)
                                 }
+
                                 Status.ERROR -> {
-                                    Log.e("Status", "Error ${it.message}")
+                                    textViewError.visibility = View.VISIBLE
+                                    textViewError.text = it.message
                                 }
+
                                 Status.LOADING -> {
-                                    Log.e("Status", "Loading")
+                                    progressBar.visibility = View.VISIBLE
                                 }
                             }
                         }
