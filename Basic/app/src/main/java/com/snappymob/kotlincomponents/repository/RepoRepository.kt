@@ -2,7 +2,6 @@ package com.snappymob.kotlincomponents.repository
 
 import android.arch.lifecycle.LiveData
 import android.support.annotation.Nullable
-import android.util.Log
 import com.snappymob.kotlincomponents.db.RepoDao
 import com.snappymob.kotlincomponents.model.Repo
 import com.snappymob.kotlincomponents.network.ApiResponse
@@ -27,9 +26,6 @@ class RepoRepository(repoDao: RepoDao, githubService: GithubService, appExecutor
     fun loadRepos(owner: String): LiveData<Resource<List<Repo>>> {
         return object : NetworkBoundResource<List<Repo>, List<Repo>>(appExecutors) {
             override fun saveCallResult(item: List<Repo>) {
-                item.forEach {
-                    Log.e("Item", it.name)
-                }
                 repoDao.insertRepos(item)
             }
 
