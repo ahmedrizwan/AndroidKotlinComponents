@@ -11,7 +11,7 @@ constructor(private val appExecutors: AppExecutors) {
     private val result = MediatorLiveData<Resource<ResultType>>()
 
     init {
-        result.value = Resource.loading<Any>(null) as Resource<ResultType>
+//        result.value = Resource.loading<Any>(null) as Resource<ResultType>
         val dbSource = loadFromDb()
         result.addSource(dbSource) { resultType ->
             result.removeSource(dbSource)
@@ -26,7 +26,11 @@ constructor(private val appExecutors: AppExecutors) {
     fun fetchFromNetwork(dbSource: LiveData<ResultType>) {
         val apiResponse = createCall()
         // we re-attach dbSource as a new source, it will dispatch its latest value quickly
-        result.addSource(dbSource) { resultType -> result.value = Resource.loading(resultType) }
+        result.addSource(dbSource) {
+            resultType ->
+//                Log.e("Db", "Source Changed")
+                result.value = Resource.loading(resultType)
+        }
 
         result.addSource(apiResponse) { response ->
             result.removeSource(apiResponse)

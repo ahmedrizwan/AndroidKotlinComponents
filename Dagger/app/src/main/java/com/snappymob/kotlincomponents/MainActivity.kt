@@ -23,7 +23,6 @@ class MainActivity : LifecycleActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        val allViews = arrayOf(recyclerViewRepos, progressBar, textViewError)
 
         viewModelFactory.let {
             val repoViewModel = ViewModelProviders.of(this, it).get(RepoViewModel::class.java)
@@ -35,20 +34,18 @@ class MainActivity : LifecycleActivity() {
                 if (editTextUser.text.length > 3) {
                     repoViewModel.loadRepos(editTextUser.text.toString())?.observe(this, Observer {
                         it?.let {
-                            allViews.forEach { view -> view.visibility = View.GONE }
-
+                            textViewError.visibility = View.GONE
+                            progressBar.visibility = View.GONE
+                            reposAdapter.updateDataSet(ArrayList())
                             when (it.status) {
-
                                 Status.SUCCESS -> {
                                     recyclerViewRepos.visibility = View.VISIBLE
                                     reposAdapter.updateDataSet(it.data as ArrayList<Repo>)
                                 }
-
                                 Status.ERROR -> {
                                     textViewError.visibility = View.VISIBLE
                                     textViewError.text = it.message
                                 }
-
                                 Status.LOADING -> {
                                     progressBar.visibility = View.VISIBLE
                                 }

@@ -8,7 +8,6 @@ import android.arch.persistence.room.Room
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.util.ArrayMap
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import com.snappymob.kotlincomponents.adapters.ReposAdapter
@@ -59,40 +58,24 @@ class MainActivity : LifecycleActivity() {
             val reposAdapter = ReposAdapter(this, ArrayList())
             recyclerViewRepos.adapter = reposAdapter
             recyclerViewRepos.layoutManager = LinearLayoutManager(this)
-            val allViews = arrayOf(recyclerViewRepos, progressBar, textViewError)
 
             buttonSearch.setOnClickListener({
                 if (editTextUser.text.length > 3) {
                     repoViewModel.loadRepos(editTextUser.text.toString())?.observe(this, Observer {
                         it?.let {
-//                            allViews.forEach { view -> view.visibility = View.GONE }
-//                            for (view in allViews) {
-//                                view.visibility = View.GONE
-//                            }
-
+                            textViewError.visibility = View.GONE
+                            progressBar.visibility = View.GONE
+                            reposAdapter.updateDataSet(ArrayList())
                             when (it.status) {
-
                                 Status.SUCCESS -> {
-                                    Log.e("Status", "Success")
-
-                                    textViewError.visibility = View.GONE
-                                    progressBar.visibility = View.GONE
                                     recyclerViewRepos.visibility = View.VISIBLE
                                     reposAdapter.updateDataSet(it.data as ArrayList<Repo>)
                                 }
-
                                 Status.ERROR -> {
-                                    Log.e("Status", "Error")
-                                    progressBar.visibility = View.GONE
-                                    recyclerViewRepos.visibility = View.GONE
                                     textViewError.visibility = View.VISIBLE
                                     textViewError.text = it.message
                                 }
-
                                 Status.LOADING -> {
-                                    Log.e("Status", "Loading")
-                                    textViewError.visibility = View.GONE
-                                    recyclerViewRepos.visibility = View.GONE
                                     progressBar.visibility = View.VISIBLE
                                 }
                             }
