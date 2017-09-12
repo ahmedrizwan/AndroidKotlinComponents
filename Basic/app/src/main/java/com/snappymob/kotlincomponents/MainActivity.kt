@@ -8,7 +8,7 @@ import android.arch.persistence.room.Room
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.util.ArrayMap
-import android.util.Log
+import android.view.View
 import android.widget.Toast
 import com.snappymob.kotlincomponents.adapters.ReposAdapter
 import com.snappymob.kotlincomponents.db.GithubDb
@@ -58,27 +58,34 @@ class MainActivity : LifecycleActivity() {
             val reposAdapter = ReposAdapter(this, ArrayList())
             recyclerViewRepos.adapter = reposAdapter
             recyclerViewRepos.layoutManager = LinearLayoutManager(this)
+            val allViews = arrayOf(recyclerViewRepos, progressBar, textViewError)
 
             buttonSearch.setOnClickListener({
                 if (editTextUser.text.length > 3) {
                     repoViewModel.loadRepos(editTextUser.text.toString())?.observe(this, Observer {
                         it?.let {
+                            allViews.forEach { view -> view.visibility = View.GONE }
+
                             when (it.status) {
+
                                 Status.SUCCESS -> {
-                                    Log.e("Status", "Success")
+                                    recyclerViewRepos.visibility = View.VISIBLE
                                     reposAdapter.updateDataSet(it.data as ArrayList<Repo>)
                                 }
+
                                 Status.ERROR -> {
-                                    Log.e("Status", "Error ${it.message}")
+                                    textViewError.visibility = View.VISIBLE
+                                    textViewError.text = it.message
                                 }
+
                                 Status.LOADING -> {
-                                    Log.e("Status", "Loading")
+                                    progressBar.visibility = View.VISIBLE
                                 }
                             }
                         }
                     })
                 } else {
-                   Toast.makeText(this, "Repo name must be > 3 length", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Repo name must be > 3 length", Toast.LENGTH_SHORT).show()
                 }
             })
         }
