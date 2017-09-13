@@ -17,10 +17,7 @@ import java.util.concurrent.TimeUnit
  * Created by ahmedrizwan on 9/10/17.
  *
  */
-class RepoRepository(repoDao: RepoDao, githubService: GithubService, appExecutors: AppExecutors) {
-    val repoDao = repoDao
-    val githubService = githubService
-    val appExecutors = appExecutors
+class RepoRepository(val repoDao: RepoDao, val githubService: GithubService, val appExecutors: AppExecutors) {
     val repoListRateLimit = RateLimiter<String>(10, TimeUnit.MINUTES)
 
     fun loadRepos(owner: String): LiveData<Resource<List<Repo>>> {
