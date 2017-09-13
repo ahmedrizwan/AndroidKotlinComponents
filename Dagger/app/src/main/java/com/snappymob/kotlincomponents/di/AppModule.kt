@@ -12,9 +12,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
-@Module(
-        includes = arrayOf(ViewModelModule::class)
-)
+@Module
 internal class AppModule {
 
     @Singleton

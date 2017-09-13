@@ -15,11 +15,12 @@ import javax.inject.Inject
 
 class RepoViewModel
 @Inject constructor(repository: RepoRepository) : ViewModel() {
-    var repo: LiveData<Resource<List<Repo>>>? = null
     val repoRepository = repository
     val map: ArrayMap<String, LiveData<Resource<List<Repo>>>> = ArrayMap()
+    var currentRepoUser: String? = null
     fun loadRepos(username: String): LiveData<Resource<List<Repo>>>? {
-        if(map[username] == null){
+        currentRepoUser = username
+        if (map[username] == null) {
             map[username] = repoRepository.loadRepos(username)
         }
         return map[username]
