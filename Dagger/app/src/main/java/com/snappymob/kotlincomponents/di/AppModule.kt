@@ -12,7 +12,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
-@Module
+@Module(includes = arrayOf(ViewModelModule::class))
 internal class AppModule {
 
     @Singleton
@@ -38,5 +38,5 @@ internal class AppModule {
     fun provideRepoDao(db: GithubDb): RepoDao {
         return db.repoDao()
     }
-    
+
 }

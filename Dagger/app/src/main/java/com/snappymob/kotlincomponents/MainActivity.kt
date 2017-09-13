@@ -2,6 +2,8 @@ package com.snappymob.kotlincomponents
 
 import android.arch.lifecycle.LifecycleActivity
 import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProvider
+import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
@@ -13,17 +15,26 @@ import com.snappymob.kotlincomponents.viewmodel.RepoViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
 
+
+
+
+
 /***
  * Activity that displays a list of Repos
  */
 class MainActivity : LifecycleActivity() {
 
     @Inject
-    lateinit var repoViewModel: RepoViewModel
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+
+    lateinit var repoViewModel:RepoViewModel
+
+    private val USER_STATE_KEY = "UserName"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        repoViewModel = ViewModelProviders.of(this, viewModelFactory).get(RepoViewModel::class.java)
 
         val reposAdapter = ReposAdapter(this, ArrayList())
         recyclerViewRepos.adapter = reposAdapter
@@ -57,7 +68,7 @@ class MainActivity : LifecycleActivity() {
         })
 
         //state recovery using viewModel
-        var currentUserName = savedInstanceState?.get("UserName") as String?
+        var currentUserName = savedInstanceState?.get(USER_STATE_KEY) as String?
         currentUserName?.let {
             repoViewModel.loadRepos(it)?.observe(this, Observer {
                 it?.let {
@@ -86,7 +97,7 @@ class MainActivity : LifecycleActivity() {
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
         //get the state from viewModel
-        outState?.putString("UserName", repoViewModel.currentRepoUser)
+        outState?.putString(USER_STATE_KEY, repoViewModel.currentRepoUser)
     }
 
 }
