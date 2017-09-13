@@ -27,7 +27,10 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class MainActivity : LifecycleActivity() {
 
-    fun getGithubService(): GithubService? {
+    private val USER_STATE_KEY = "UserName"
+    private lateinit var repoViewModel:RepoViewModel
+
+    private fun getGithubService(): GithubService {
         return Retrofit.Builder()
                 .baseUrl("https://api.github.com/")
                 .addConverterFactory(GsonConverterFactory.create())
@@ -42,49 +45,80 @@ class MainActivity : LifecycleActivity() {
 
         val retrofit = getGithubService()
 
-        if(retrofit!=null) {
-            val githubDb = Room.databaseBuilder(applicationContext,
-                    GithubDb::class.java, "app-db").allowMainThreadQueries()
-                    .build()
-            val appExecutors = AppExecutors()
+        val githubDb = Room.databaseBuilder(applicationContext,
+                GithubDb::class.java, "app-db").allowMainThreadQueries()
+                .build()
+        val appExecutors = AppExecutors()
 
-            val repo = RepoViewModel(RepoRepository(githubDb.repoDao(), retrofit, appExecutors))
-            val arrayMap = ArrayMap<Class<out ViewModel>, ViewModel>()
-            arrayMap.put(RepoViewModel::class.java, repo)
+        val arrayMap = ArrayMap<Class<out ViewModel>, ViewModel>()
 
-            val factory = GithubViewModelFactory(arrayMap)
-            val repoViewModel = ViewModelProviders.of(this, factory).get(RepoViewModel::class.java)
+        arrayMap.put(RepoViewModel::class.java, RepoViewModel(RepoRepository(githubDb.repoDao(), retrofit, appExecutors)))
 
-            val reposAdapter = ReposAdapter(this, ArrayList())
-            recyclerViewRepos.adapter = reposAdapter
-            recyclerViewRepos.layoutManager = LinearLayoutManager(this)
+        val factory = GithubViewModelFactory(arrayMap)
+        repoViewModel = ViewModelProviders.of(this, factory).get(RepoViewModel::class.java)
 
-            buttonSearch.setOnClickListener({
-                if (editTextUser.text.length > 3) {
-                    repoViewModel.loadRepos(editTextUser.text.toString())?.observe(this, Observer {
-                        it?.let {
-                            textViewError.visibility = View.GONE
-                            progressBar.visibility = View.GONE
-                            reposAdapter.updateDataSet(ArrayList())
-                            when (it.status) {
-                                Status.SUCCESS -> {
-                                    recyclerViewRepos.visibility = View.VISIBLE
-                                    reposAdapter.updateDataSet(it.data as ArrayList<Repo>)
-                                }
-                                Status.ERROR -> {
-                                    textViewError.visibility = View.VISIBLE
-                                    textViewError.text = it.message
-                                }
-                                Status.LOADING -> {
-                                    progressBar.visibility = View.VISIBLE
-                                }
+        val reposAdapter = ReposAdapter(this, ArrayList())
+        recyclerViewRepos.adapter = reposAdapter
+        recyclerViewRepos.layoutManager = LinearLayoutManager(this)
+
+        buttonSearch.setOnClickListener({
+            if (editTextUser.text.length > 3) {
+                repoViewModel.loadRepos(editTextUser.text.toString())?.observe(this, Observer {
+                    it?.let {
+                        textViewError.visibility = View.GONE
+                        progressBar.visibility = View.GONE
+                        reposAdapter.updateDataSet(ArrayList())
+                        when (it.status) {
+                            Status.SUCCESS -> {
+                                recyclerViewRepos.visibility = View.VISIBLE
+                                reposAdapter.updateDataSet(it.data as ArrayList<Repo>)
+                            }
+                            Status.ERROR -> {
+                                textViewError.visibility = View.VISIBLE
+                                textViewError.text = it.message
+                            }
+                            Status.LOADING -> {
+                                progressBar.visibility = View.VISIBLE
                             }
                         }
-                    })
-                } else {
-                    Toast.makeText(this, "Repo name must be > 3 length", Toast.LENGTH_SHORT).show()
+                    }
+                })
+            } else {
+                Toast.makeText(this, "Repo name must be > 3 length", Toast.LENGTH_SHORT).show()
+            }
+        })
+
+
+        //state recovery using viewModel
+        val currentUserName = savedInstanceState?.get(USER_STATE_KEY) as String?
+        currentUserName?.let {
+            repoViewModel.loadRepos(it)?.observe(this, Observer {
+                it?.let {
+                    textViewError.visibility = View.GONE
+                    progressBar.visibility = View.GONE
+                    reposAdapter.updateDataSet(ArrayList())
+                    when (it.status) {
+                        Status.SUCCESS -> {
+                            recyclerViewRepos.visibility = View.VISIBLE
+                            reposAdapter.updateDataSet(it.data as ArrayList<Repo>)
+                        }
+                        Status.ERROR -> {
+                            textViewError.visibility = View.VISIBLE
+                            textViewError.text = it.message
+                        }
+                        Status.LOADING -> {
+                            progressBar.visibility = View.VISIBLE
+                        }
+                    }
                 }
             })
         }
+    }
+
+    //save state
+    override fun onSaveInstanceState(outState: Bundle?) {
+        super.onSaveInstanceState(outState)
+        //get the state from viewModel
+        outState?.putString(USER_STATE_KEY, repoViewModel.currentRepoUser)
     }
 }

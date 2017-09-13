@@ -27,7 +27,7 @@ class MainActivity : LifecycleActivity() {
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
-    lateinit var repoViewModel:RepoViewModel
+    private lateinit var repoViewModel:RepoViewModel
 
     private val USER_STATE_KEY = "UserName"
 
@@ -68,7 +68,7 @@ class MainActivity : LifecycleActivity() {
         })
 
         //state recovery using viewModel
-        var currentUserName = savedInstanceState?.get(USER_STATE_KEY) as String?
+        val currentUserName = savedInstanceState?.get(USER_STATE_KEY) as String?
         currentUserName?.let {
             repoViewModel.loadRepos(it)?.observe(this, Observer {
                 it?.let {
