@@ -42,15 +42,20 @@ class MainActivity : LifecycleActivity() {
                 .create(GithubService::class.java)
     }
 
+    private fun getDatabase():GithubDb {
+        return Room.databaseBuilder(applicationContext,
+                GithubDb::class.java, "app-db").allowMainThreadQueries()
+                .build()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         val retrofit = getGithubService()
 
-        val githubDb = Room.databaseBuilder(applicationContext,
-                GithubDb::class.java, "app-db").allowMainThreadQueries()
-                .build()
+        val githubDb = getDatabase()
+
         val appExecutors = AppExecutors()
 
         val arrayMap = ArrayMap<Class<out ViewModel>, ViewModel>()
