@@ -16,9 +16,6 @@ import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
 
 
-
-
-
 /***
  * Activity that displays a list of Repos
  */
@@ -27,7 +24,7 @@ class MainActivity : LifecycleActivity() {
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
-    private lateinit var repoViewModel:RepoViewModel
+    private lateinit var repoViewModel: RepoViewModel
 
     private val USER_STATE_KEY = "UserName"
 
@@ -40,6 +37,14 @@ class MainActivity : LifecycleActivity() {
         recyclerViewRepos.adapter = reposAdapter
         recyclerViewRepos.layoutManager = LinearLayoutManager(this)
 
+        //search click listener
+        setupSearchListener(reposAdapter)
+
+        //state recovery using viewModel
+        recoverState(savedInstanceState, reposAdapter)
+    }
+
+    private fun setupSearchListener(reposAdapter: ReposAdapter) {
         buttonSearch.setOnClickListener({
             if (editTextUser.text.length > 3) {
                 repoViewModel.loadRepos(editTextUser.text.toString())?.observe(this, Observer {
@@ -66,9 +71,6 @@ class MainActivity : LifecycleActivity() {
                 Toast.makeText(this, "Repo name must be > 3 length", Toast.LENGTH_SHORT).show()
             }
         })
-
-        //state recovery using viewModel
-        recoverState(savedInstanceState, reposAdapter)
     }
 
     private fun recoverState(savedInstanceState: Bundle?, reposAdapter: ReposAdapter) {

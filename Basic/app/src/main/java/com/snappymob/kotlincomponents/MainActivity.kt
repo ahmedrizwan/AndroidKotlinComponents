@@ -27,8 +27,9 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class MainActivity : LifecycleActivity() {
 
-    private val USER_STATE_KEY = "UserName"
     private lateinit var repoViewModel:RepoViewModel
+
+    private val USER_STATE_KEY = "UserName"
 
     private fun getGithubService(): GithubService {
         return Retrofit.Builder()
