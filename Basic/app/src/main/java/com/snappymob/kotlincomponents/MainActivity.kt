@@ -18,7 +18,7 @@ import com.snappymob.kotlincomponents.network.Status
 import com.snappymob.kotlincomponents.repository.RepoRepository
 import com.snappymob.kotlincomponents.retrofit.GithubService
 import com.snappymob.kotlincomponents.retrofit.LiveDataCallAdapterFactory
-import com.snappymob.kotlincomponents.viewmodel.GithubViewModelFactory
+import com.snappymob.kotlincomponents.viewmodel.ViewModelFactory
 import com.snappymob.kotlincomponents.viewmodel.RepoViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import retrofit2.Retrofit
@@ -62,7 +62,7 @@ class MainActivity : LifecycleActivity() {
 
         arrayMap.put(RepoViewModel::class.java, RepoViewModel(RepoRepository(githubDb.repoDao(), retrofit, appExecutors)))
 
-        val factory = GithubViewModelFactory(arrayMap)
+        val factory = ViewModelFactory(arrayMap)
         repoViewModel = ViewModelProviders.of(this, factory).get(RepoViewModel::class.java)
 
         val reposAdapter = ReposAdapter(this, ArrayList())
