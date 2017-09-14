@@ -24,7 +24,9 @@ import kotlinx.android.synthetic.main.activity_main.*
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-
+/***
+ * Activity that displays a list of Repos
+ */
 class MainActivity : LifecycleActivity() {
 
     private lateinit var repoViewModel:RepoViewModel
