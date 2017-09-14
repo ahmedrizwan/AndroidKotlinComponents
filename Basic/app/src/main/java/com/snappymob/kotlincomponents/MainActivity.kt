@@ -90,6 +90,10 @@ class MainActivity : LifecycleActivity() {
 
 
         //state recovery using viewModel
+        recoverState(savedInstanceState, reposAdapter)
+    }
+
+    private fun recoverState(savedInstanceState: Bundle?, reposAdapter: ReposAdapter) {
         val currentUserName = savedInstanceState?.get(USER_STATE_KEY) as String?
         currentUserName?.let {
             repoViewModel.loadRepos(it)?.observe(this, Observer {
