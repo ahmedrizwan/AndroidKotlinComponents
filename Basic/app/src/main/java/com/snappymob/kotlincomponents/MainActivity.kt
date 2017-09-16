@@ -1,11 +1,11 @@
 package com.snappymob.kotlincomponents
 
-import android.arch.lifecycle.LifecycleActivity
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProviders
 import android.arch.persistence.room.Room
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.util.ArrayMap
 import android.view.View
@@ -18,8 +18,8 @@ import com.snappymob.kotlincomponents.network.Status
 import com.snappymob.kotlincomponents.repository.RepoRepository
 import com.snappymob.kotlincomponents.retrofit.GithubService
 import com.snappymob.kotlincomponents.retrofit.LiveDataCallAdapterFactory
-import com.snappymob.kotlincomponents.viewmodel.ViewModelFactory
 import com.snappymob.kotlincomponents.viewmodel.RepoViewModel
+import com.snappymob.kotlincomponents.viewmodel.ViewModelFactory
 import kotlinx.android.synthetic.main.activity_main.*
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -27,7 +27,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 /***
  * Activity that displays a list of Repos
  */
-class MainActivity : LifecycleActivity() {
+class MainActivity : AppCompatActivity() {
 
     private lateinit var repoViewModel:RepoViewModel
 
