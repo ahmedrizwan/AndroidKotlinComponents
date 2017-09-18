@@ -7,7 +7,7 @@ import com.snappymob.kotlincomponents.model.Repo
 import com.snappymob.kotlincomponents.network.AppExecutors
 import com.snappymob.kotlincomponents.network.NetworkBoundResource
 import com.snappymob.kotlincomponents.network.Resource
-import com.snappymob.kotlincomponents.retrofit.GithubService
+import com.snappymob.kotlincomponents.retrofit.RetrofitService
 import com.snappymob.kotlincomponents.utils.RateLimiter
 import io.reactivex.Flowable
 import java.util.concurrent.TimeUnit
@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit
  * Created by ahmedrizwan on 9/10/17.
  *
  */
-class RepoRepository(val repoDao: RepoDao, val githubService: GithubService, val appExecutors: AppExecutors) {
+class RepoRepository(val repoDao: RepoDao, val retrofitService: RetrofitService, val appExecutors: AppExecutors) {
     val repoListRateLimit = RateLimiter<String>(10, TimeUnit.MINUTES)
 
     fun loadRepos(owner: String): Flowable<Resource<List<Repo>>> {
@@ -40,7 +40,7 @@ class RepoRepository(val repoDao: RepoDao, val githubService: GithubService, val
 
             override fun createCall(): Flowable<List<Repo>> {
                 Log.e("Create Call", "Creating Call")
-                return githubService.getRepos(owner)
+                return retrofitService.getRepos(owner)
             }
 
             override fun onFetchFailed() {

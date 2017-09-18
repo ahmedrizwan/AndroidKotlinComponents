@@ -11,12 +11,12 @@ import android.util.ArrayMap
 import android.view.View
 import android.widget.Toast
 import com.snappymob.kotlincomponents.adapters.ReposAdapter
-import com.snappymob.kotlincomponents.db.GithubDb
+import com.snappymob.kotlincomponents.db.AppDb
 import com.snappymob.kotlincomponents.model.Repo
 import com.snappymob.kotlincomponents.network.AppExecutors
 import com.snappymob.kotlincomponents.network.Status
 import com.snappymob.kotlincomponents.repository.RepoRepository
-import com.snappymob.kotlincomponents.retrofit.GithubService
+import com.snappymob.kotlincomponents.retrofit.RetrofitService
 import com.snappymob.kotlincomponents.viewmodel.RepoViewModel
 import com.snappymob.kotlincomponents.viewmodel.ViewModelFactory
 import kotlinx.android.synthetic.main.activity_main.*
@@ -33,18 +33,19 @@ class MainActivity : AppCompatActivity() {
 
     private val USER_STATE_KEY = "UserName"
 
-    private fun getGithubService(): GithubService {
+    private fun getRetrofit(): RetrofitService {
         return Retrofit.Builder()
+                //todo: change URL here
                 .baseUrl("https://api.github.com/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build()
-                .create(GithubService::class.java)
+                .create(RetrofitService::class.java)
     }
 
-    private fun getDatabase():GithubDb {
+    private fun getDatabase(): AppDb {
         return Room.databaseBuilder(applicationContext,
-                GithubDb::class.java, "app-db").allowMainThreadQueries()
+                AppDb::class.java, "app-db").allowMainThreadQueries()
                 .build()
     }
 
@@ -52,15 +53,15 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val retrofit = getGithubService()
+        val retrofit = getRetrofit()
 
-        val githubDb = getDatabase()
+        val db = getDatabase()
 
         val appExecutors = AppExecutors()
 
         val arrayMap = ArrayMap<Class<out ViewModel>, ViewModel>()
 
-        arrayMap.put(RepoViewModel::class.java, RepoViewModel(RepoRepository(githubDb.repoDao(), retrofit, appExecutors)))
+        arrayMap.put(RepoViewModel::class.java, RepoViewModel(RepoRepository(db.repoDao(), retrofit, appExecutors)))
 
         val factory = ViewModelFactory(arrayMap)
         repoViewModel = ViewModelProviders.of(this, factory).get(RepoViewModel::class.java)
