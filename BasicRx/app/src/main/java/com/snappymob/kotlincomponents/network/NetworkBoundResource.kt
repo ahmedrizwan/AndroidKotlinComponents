@@ -14,10 +14,7 @@ constructor(private val appExecutors: AppExecutors) {
     private val result = PublishSubject.create<Resource<ResultType>>()
 
     init {
-        result.onNext(Resource.loading(null))
-
-        val dbSource = loadFromDb()
-        dbSource.subscribeOn(Schedulers.io())
+        loadFromDb().subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ value ->
                     if (shouldFetch(value)) {
@@ -30,10 +27,7 @@ constructor(private val appExecutors: AppExecutors) {
 
     fun fetchFromNetwork() {
         val apiResponse = createCall()
-        // we re-attach dbSource as a new source, it will dispatch its latest value quickly
-//        dbSource.subscribe({ value ->
-//            result.onNext(Resource.success(value))
-//        })
+        //send a loading event
         result.onNext(Resource.loading(null))
         apiResponse.subscribeOn(Schedulers.from(appExecutors.networkIO()))
                 .observeOn(Schedulers.from(appExecutors.mainThread()))
@@ -41,15 +35,15 @@ constructor(private val appExecutors: AppExecutors) {
                     appExecutors
                             .diskIO()
                             .execute {
-                                //                                    processResponse(response)?.let { saveCallResult(it) }
                                 saveCallResult(response)
                                 appExecutors.mainThread()
                                         .execute {
                                             // we specially request a new live data,
                                             // otherwise we will get immediately last cached value,
                                             // which may not be updated with latest results received from network.
-                                            loadFromDb().subscribeOn(Schedulers.from(appExecutors.networkIO()))
-                                                    .observeOn(AndroidSchedulers.mainThread())
+                                            loadFromDb()
+                                                    .subscribeOn(Schedulers.from(appExecutors.networkIO()))
+                                                    .observeOn(Schedulers.from(appExecutors.mainThread()))
                                                     .subscribe({
                                                         result.onNext(Resource.success(it))
                                                     })
@@ -67,11 +61,6 @@ constructor(private val appExecutors: AppExecutors) {
     }
 
     protected open fun onFetchFailed() {}
-
-    @WorkerThread
-    protected fun processResponse(response: ApiResponse<RequestType>): RequestType? {
-        return response.body
-    }
 
     @WorkerThread
     protected abstract fun saveCallResult(item: RequestType)

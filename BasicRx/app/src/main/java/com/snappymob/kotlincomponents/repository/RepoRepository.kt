@@ -28,20 +28,23 @@ class RepoRepository(val repoDao: RepoDao, val githubService: GithubService, val
             }
 
             override fun shouldFetch(@Nullable data: List<Repo>?): Boolean {
-                return data == null || data.isEmpty() || repoListRateLimit.shouldFetch(owner)
+                val result = data == null || data.isEmpty() || repoListRateLimit.shouldFetch(owner)
+                Log.e("Should Fetch", result.toString() )
+                return result
             }
 
             override fun loadFromDb(): Flowable<List<Repo>> {
+                Log.e("LoadFrom Db", "Loading from Db")
                 return repoDao.loadRepositories(owner)
             }
 
             override fun createCall(): Flowable<List<Repo>> {
-//                ApiResponse<List<Repo>>(Response.success())
-//                Flowable.just()
+                Log.e("Create Call", "Creating Call")
                 return githubService.getRepos(owner)
             }
 
             override fun onFetchFailed() {
+                Log.e("Fetch Failed", "Resetting the Rate Limiter")
                 repoListRateLimit.reset(owner)
             }
         }.asFlowable()
