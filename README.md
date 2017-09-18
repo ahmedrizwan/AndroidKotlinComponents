@@ -1,7 +1,7 @@
 # AndroidKotlinComponents
 A starter boilerplate project for Android, with Components Architecture implemented, written completely in Kotlin. 
 
-## Basic Project 
+## Basic Version 
 - Retrofit 
 - Room 
 - ViewModel
@@ -9,6 +9,8 @@ A starter boilerplate project for Android, with Components Architecture implemen
 - Helper Classes 
 - A Single MainActivity 
 
-## Dagger Project
-- Everything that Basic project includes
-- DI Components & Modules
+## BasicRx Version
+- Basic version but utilizes Rx with Room & Retrofit instead of LiveData 
+
+## Dagger Version
+- Everything that Basic version includes but uses Dagger2 for Dependency Injection 
