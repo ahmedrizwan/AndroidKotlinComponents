@@ -2,10 +2,7 @@ package com.snappymob.kotlincomponents.viewmodel
 
 import android.arch.lifecycle.ViewModel
 import android.util.ArrayMap
-import com.snappymob.kotlincomponents.model.Repo
-import com.snappymob.kotlincomponents.network.Resource
 import com.snappymob.kotlincomponents.repository.RepoRepository
-import io.reactivex.Flowable
 
 
 /**
@@ -13,13 +10,15 @@ import io.reactivex.Flowable
  */
 class RepoViewModel(repository: RepoRepository):ViewModel() {
     val repoRepository = repository
-    val map: ArrayMap<String, Flowable<Resource<List<Repo>>>> = ArrayMap()
+    val map: ArrayMap<String, RepoLiveData> = ArrayMap()
     var currentRepoUser: String? = null
-    fun loadRepos(username: String): Flowable<Resource<List<Repo>>>? {
+    fun loadRepos(username: String): RepoLiveData? {
         currentRepoUser = username
         if (map[username] == null) {
-            map[username] = repoRepository.loadRepos(username)
+            map[username] = RepoLiveData(repoRepository, owner = username)
         }
         return map[username]
     }
+
+
 }

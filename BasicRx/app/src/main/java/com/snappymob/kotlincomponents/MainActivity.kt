@@ -1,5 +1,6 @@
 package com.snappymob.kotlincomponents
 
+import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProviders
 import android.arch.persistence.room.Room
@@ -18,7 +19,6 @@ import com.snappymob.kotlincomponents.repository.RepoRepository
 import com.snappymob.kotlincomponents.retrofit.GithubService
 import com.snappymob.kotlincomponents.viewmodel.RepoViewModel
 import com.snappymob.kotlincomponents.viewmodel.ViewModelFactory
-import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.activity_main.*
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
@@ -29,7 +29,7 @@ import retrofit2.converter.gson.GsonConverterFactory
  */
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var repoViewModel: RepoViewModel
+    private lateinit var repoViewModel:RepoViewModel
 
     private val USER_STATE_KEY = "UserName"
 
@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity() {
                 .create(GithubService::class.java)
     }
 
-    private fun getDatabase(): GithubDb {
+    private fun getDatabase():GithubDb {
         return Room.databaseBuilder(applicationContext,
                 GithubDb::class.java, "app-db").allowMainThreadQueries()
                 .build()
@@ -79,27 +79,26 @@ class MainActivity : AppCompatActivity() {
     private fun setupSearchListener(reposAdapter: ReposAdapter) {
         buttonSearch.setOnClickListener({
             if (editTextUser.text.length > 3) {
-                repoViewModel.loadRepos(editTextUser.text.toString())?.observeOn(AndroidSchedulers.mainThread())
-                        ?.subscribe({
-                            it?.let {
-                                textViewError.visibility = View.GONE
-                                progressBar.visibility = View.GONE
-                                reposAdapter.updateDataSet(ArrayList())
-                                when (it.status) {
-                                    Status.SUCCESS -> {
-                                        recyclerViewRepos.visibility = View.VISIBLE
-                                        reposAdapter.updateDataSet(it.data as ArrayList<Repo>)
-                                    }
-                                    Status.ERROR -> {
-                                        textViewError.visibility = View.VISIBLE
-                                        textViewError.text = it.message
-                                    }
-                                    Status.LOADING -> {
-                                        progressBar.visibility = View.VISIBLE
-                                    }
-                                }
+                repoViewModel.loadRepos(editTextUser.text.toString())?.observe(this, Observer {
+                    it?.let {
+                        textViewError.visibility = View.GONE
+                        progressBar.visibility = View.GONE
+                        reposAdapter.updateDataSet(ArrayList())
+                        when (it.status) {
+                            Status.SUCCESS -> {
+                                recyclerViewRepos.visibility = View.VISIBLE
+                                reposAdapter.updateDataSet(it.data as ArrayList<Repo>)
                             }
-                        })
+                            Status.ERROR -> {
+                                textViewError.visibility = View.VISIBLE
+                                textViewError.text = it.message
+                            }
+                            Status.LOADING -> {
+                                progressBar.visibility = View.VISIBLE
+                            }
+                        }
+                    }
+                })
             } else {
                 Toast.makeText(this, "Repo name must be > 3 length", Toast.LENGTH_SHORT).show()
             }
@@ -109,7 +108,7 @@ class MainActivity : AppCompatActivity() {
     private fun recoverState(savedInstanceState: Bundle?, reposAdapter: ReposAdapter) {
         val currentUserName = savedInstanceState?.get(USER_STATE_KEY) as String?
         currentUserName?.let {
-            repoViewModel.loadRepos(it)?.subscribe({
+            repoViewModel.loadRepos(it)?.observe(this, Observer {
                 it?.let {
                     textViewError.visibility = View.GONE
                     progressBar.visibility = View.GONE
@@ -128,7 +127,6 @@ class MainActivity : AppCompatActivity() {
                         }
                     }
                 }
-
             })
         }
     }
