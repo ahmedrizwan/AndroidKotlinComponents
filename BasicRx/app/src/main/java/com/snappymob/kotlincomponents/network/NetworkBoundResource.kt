@@ -2,7 +2,6 @@ package com.snappymob.kotlincomponents.network
 
 import android.support.annotation.MainThread
 import android.support.annotation.WorkerThread
-import android.util.Log
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -22,14 +21,14 @@ constructor(private val appExecutors: AppExecutors) {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ value ->
                     if (shouldFetch(value)) {
-                        fetchFromNetwork(dbSource)
+                        fetchFromNetwork()
                     } else {
                         result.onNext(Resource.success(value))
                     }
                 })
     }
 
-    fun fetchFromNetwork(dbSource: Flowable<ResultType>) {
+    fun fetchFromNetwork() {
         val apiResponse = createCall()
         // we re-attach dbSource as a new source, it will dispatch its latest value quickly
 //        dbSource.subscribe({ value ->
@@ -39,38 +38,34 @@ constructor(private val appExecutors: AppExecutors) {
         apiResponse.subscribeOn(Schedulers.from(appExecutors.networkIO()))
                 .observeOn(Schedulers.from(appExecutors.mainThread()))
                 .subscribe({ response ->
-                    if (response!=null) {
-                        appExecutors
-                                .diskIO()
-                                .execute {
-//                                    processResponse(response)?.let { saveCallResult(it) }
-                                    saveCallResult(response)
-                                    appExecutors.mainThread()
-                                            .execute {
-                                                // we specially request a new live data,
-                                                // otherwise we will get immediately last cached value,
-                                                // which may not be updated with latest results received from network.
-                                                loadFromDb().subscribeOn(Schedulers.from(appExecutors.networkIO()))
-                                                        .observeOn(AndroidSchedulers.mainThread())
-                                                        .subscribe({
-                                                            result.onNext(Resource.success(it))
-                                                        })
-                                            }
-                                }
-                    } else {
-                        onFetchFailed()
-                        Log.e("Failed", "Fetch")
-
-//                        result.onNext(Resource.error())
-//                        result.addSource(dbSource
-//                        ) { resultType -> result.value = response.errorMessage?.let { Resource.error(it, resultType) } }
-                    }
+                    appExecutors
+                            .diskIO()
+                            .execute {
+                                //                                    processResponse(response)?.let { saveCallResult(it) }
+                                saveCallResult(response)
+                                appExecutors.mainThread()
+                                        .execute {
+                                            // we specially request a new live data,
+                                            // otherwise we will get immediately last cached value,
+                                            // which may not be updated with latest results received from network.
+                                            loadFromDb().subscribeOn(Schedulers.from(appExecutors.networkIO()))
+                                                    .observeOn(AndroidSchedulers.mainThread())
+                                                    .subscribe({
+                                                        result.onNext(Resource.success(it))
+                                                    })
+                                        }
+                            }
+                }, { error ->
+                    onFetchFailed()
+                    result.onNext(Resource.error(error.localizedMessage, null))
                 })
 
     }
+
     fun asFlowable(): Flowable<Resource<ResultType>> {
         return result.toFlowable(BackpressureStrategy.BUFFER)
     }
+
     protected open fun onFetchFailed() {}
 
     @WorkerThread
