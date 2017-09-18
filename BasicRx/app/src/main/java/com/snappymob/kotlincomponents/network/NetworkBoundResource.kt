@@ -39,11 +39,12 @@ constructor(private val appExecutors: AppExecutors) {
         apiResponse.subscribeOn(Schedulers.from(appExecutors.networkIO()))
                 .observeOn(Schedulers.from(appExecutors.mainThread()))
                 .subscribe({ response ->
-                    if (response!!.isSuccessful) {
+                    if (response!=null) {
                         appExecutors
                                 .diskIO()
                                 .execute {
-                                    processResponse(response)?.let { saveCallResult(it) }
+//                                    processResponse(response)?.let { saveCallResult(it) }
+                                    saveCallResult(response)
                                     appExecutors.mainThread()
                                             .execute {
                                                 // we specially request a new live data,
@@ -87,6 +88,6 @@ constructor(private val appExecutors: AppExecutors) {
     protected abstract fun loadFromDb(): Flowable<ResultType>
 
     @MainThread
-    protected abstract fun createCall(): Flowable<ApiResponse<RequestType>>
+    protected abstract fun createCall(): Flowable<RequestType>
 
 }

@@ -4,7 +4,6 @@ import android.support.annotation.Nullable
 import android.util.Log
 import com.snappymob.kotlincomponents.db.RepoDao
 import com.snappymob.kotlincomponents.model.Repo
-import com.snappymob.kotlincomponents.network.ApiResponse
 import com.snappymob.kotlincomponents.network.AppExecutors
 import com.snappymob.kotlincomponents.network.NetworkBoundResource
 import com.snappymob.kotlincomponents.network.Resource
@@ -25,7 +24,6 @@ class RepoRepository(val repoDao: RepoDao, val githubService: GithubService, val
         return object : NetworkBoundResource<List<Repo>, List<Repo>>(appExecutors) {
             override fun saveCallResult(item: List<Repo>) {
                 Log.e("Success", item.size.toString())
-
                 repoDao.insertRepos(item)
             }
 
@@ -37,7 +35,9 @@ class RepoRepository(val repoDao: RepoDao, val githubService: GithubService, val
                 return repoDao.loadRepositories(owner)
             }
 
-            override fun createCall(): Flowable<ApiResponse<List<Repo>>> {
+            override fun createCall(): Flowable<List<Repo>> {
+//                ApiResponse<List<Repo>>(Response.success())
+//                Flowable.just()
                 return githubService.getRepos(owner)
             }
 
