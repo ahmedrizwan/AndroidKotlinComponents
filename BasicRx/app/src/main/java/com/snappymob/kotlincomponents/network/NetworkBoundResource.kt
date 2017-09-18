@@ -35,7 +35,7 @@ constructor(private val appExecutors: AppExecutors) {
 //        dbSource.subscribe({ value ->
 //            result.onNext(Resource.success(value))
 //        })
-
+        result.onNext(Resource.loading(null))
         apiResponse.subscribeOn(Schedulers.from(appExecutors.networkIO()))
                 .observeOn(Schedulers.from(appExecutors.mainThread()))
                 .subscribe({ response ->
@@ -61,7 +61,7 @@ constructor(private val appExecutors: AppExecutors) {
                         onFetchFailed()
                         Log.e("Failed", "Fetch")
 
-
+//                        result.onNext(Resource.error())
 //                        result.addSource(dbSource
 //                        ) { resultType -> result.value = response.errorMessage?.let { Resource.error(it, resultType) } }
                     }
