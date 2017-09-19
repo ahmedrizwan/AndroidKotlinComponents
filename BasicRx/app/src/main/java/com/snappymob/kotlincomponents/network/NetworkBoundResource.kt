@@ -2,6 +2,7 @@ package com.snappymob.kotlincomponents.network
 
 import android.support.annotation.MainThread
 import android.support.annotation.WorkerThread
+import android.util.Log
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -17,6 +18,7 @@ constructor(private val appExecutors: AppExecutors) {
         loadFromDb().subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ value ->
+                    Log.e("LoadFromDb","OnNext")
                     if (shouldFetch(value)) {
                         fetchFromNetwork()
                     } else {
