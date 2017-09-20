@@ -33,7 +33,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        //init dependencies
         val retrofit = Dependencies.getRetrofit()
+
         val db = Dependencies.getDatabase(applicationContext)
 
         val appExecutors = AppExecutors()
