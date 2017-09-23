@@ -4,6 +4,8 @@ apply plugin: 'kotlin-android'
 
 apply plugin: 'kotlin-android-extensions'
 
+apply plugin: 'realm-android'
+
 ext.dagger_version = "2.11"
 ext.arch_version = "1.0.0-alpha9-1"
 
