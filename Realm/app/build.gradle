@@ -45,8 +45,8 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
 
     //Room
-    implementation "android.arch.persistence.room:runtime:$arch_version"
-    kapt "android.arch.persistence.room:compiler:$arch_version"
+//    implementation "android.arch.persistence.room:runtime:$arch_version"
+//    kapt "android.arch.persistence.room:compiler:$arch_version"
 
     //Lifecycle
     implementation "android.arch.lifecycle:runtime:$arch_version"

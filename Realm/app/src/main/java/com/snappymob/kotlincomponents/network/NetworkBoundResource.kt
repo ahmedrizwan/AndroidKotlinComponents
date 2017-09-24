@@ -4,32 +4,34 @@ import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MediatorLiveData
 import android.support.annotation.MainThread
 import android.support.annotation.WorkerThread
+import com.snappymob.kotlincomponents.utils.LiveRealmData
+import io.realm.RealmModel
+import io.realm.RealmResults
 
-abstract class NetworkBoundResource<ResultType, RequestType> @MainThread
+abstract class NetworkBoundResource<Model : RealmModel, RequestType> @MainThread
 constructor(private val appExecutors: AppExecutors) {
 
-    private val result = MediatorLiveData<Resource<ResultType>>()
+    private val result = MediatorLiveData<Resource<RealmResults<Model>>>()
 
     init {
 //        result.value = Resource.loading<Any>(null) as Resource<ResultType>
         val dbSource = loadFromDb()
-        result.addSource(dbSource) { resultType ->
-            result.removeSource(dbSource)
-            if (shouldFetch(resultType)) {
+//        result.addSource(dbSource) { resultType ->
+//            result.removeSource(dbSource)
+            if (shouldFetch(dbSource.value)) {
                 fetchFromNetwork(dbSource)
             } else {
-                result.addSource(dbSource) { resultType -> result.value = Resource.success(resultType) }
+                result.addSource(dbSource) { rT -> result.value = Resource.success(rT) }
             }
-        }
+//        }
     }
 
-    fun fetchFromNetwork(dbSource: LiveData<ResultType>) {
+    fun fetchFromNetwork(dbSource: LiveRealmData<Model>) {
         val apiResponse = createCall()
         // we re-attach dbSource as a new source, it will dispatch its latest value quickly
-        result.addSource(dbSource) {
-            resultType ->
-//                Log.e("Db", "Source Changed")
-                result.value = Resource.loading(resultType)
+        result.addSource(dbSource) { resultType ->
+            //                Log.e("Db", "Source Changed")
+            result.value = Resource.loading(resultType)
         }
 
         result.addSource(apiResponse) { response ->
@@ -37,19 +39,19 @@ constructor(private val appExecutors: AppExecutors) {
             result.removeSource(dbSource)
 
             if (response!!.isSuccessful) {
-                appExecutors
-                        .diskIO()
+//                appExecutors
+//                        .diskIO()
+//                        .execute {
+                processResponse(response)?.let { saveCallResult(it) }
+                appExecutors.mainThread()
                         .execute {
-                            processResponse(response)?.let { saveCallResult(it) }
-                            appExecutors.mainThread()
-                                    .execute {
-                                        // we specially request a new live data,
-                                        // otherwise we will get immediately last cached value,
-                                        // which may not be updated with latest results received from network.
-                                        result.addSource(loadFromDb()
-                                        ) { resultType -> result.value = Resource.success(resultType) }
-                                    }
+                            // we specially request a new live data,
+                            // otherwise we will get immediately last cached value,
+                            // which may not be updated with latest results received from network.
+                            result.addSource(loadFromDb()
+                            ) { resultType -> result.value = Resource.success(resultType) }
                         }
+//                        }
             } else {
                 onFetchFailed()
                 result.addSource(dbSource
@@ -60,7 +62,7 @@ constructor(private val appExecutors: AppExecutors) {
 
     protected open fun onFetchFailed() {}
 
-    fun asLiveData(): LiveData<Resource<ResultType>> {
+    fun asLiveData(): LiveData<Resource<RealmResults<Model>>> {
         return result
     }
 
@@ -73,10 +75,10 @@ constructor(private val appExecutors: AppExecutors) {
     protected abstract fun saveCallResult(item: RequestType)
 
     @MainThread
-    protected abstract fun shouldFetch(data: ResultType?): Boolean
+    protected abstract fun shouldFetch(data: RealmResults<Model>?): Boolean
 
     @MainThread
-    protected abstract fun loadFromDb(): LiveData<ResultType>
+    protected abstract fun loadFromDb(): LiveRealmData<Model>
 
     @MainThread
     protected abstract fun createCall(): LiveData<ApiResponse<RequestType>>

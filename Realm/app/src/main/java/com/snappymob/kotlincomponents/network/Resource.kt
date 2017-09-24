@@ -21,7 +21,7 @@ package com.snappymob.kotlincomponents.network
  * A generic class that holds a value with its loading status.
  * @param <T>
 </T> */
-class Resource<T>(val status: Status, val data: T?, val message: String?) {
+class Resource<out T>(val status: Status, val data: T?, val message: String?) {
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
