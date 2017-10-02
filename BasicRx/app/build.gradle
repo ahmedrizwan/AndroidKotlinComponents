@@ -5,7 +5,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 ext.dagger_version = "2.11"
-ext.arch_version = "1.0.0-alpha9-1"
+ext.arch_version = "1.0.0-beta1"
 
 android {
     compileSdkVersion 26
@@ -58,6 +58,8 @@ dependencies {
     compile 'io.reactivex.rxjava2:rxjava:2.1.3'
     compile 'io.reactivex.rxjava2:rxkotlin:2.1.0'
 
+    //Stetho
+    compile 'com.facebook.stetho:stetho:1.5.0'
 }
 
 

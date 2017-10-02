@@ -6,9 +6,10 @@ import com.snappymob.kotlincomponents.model.Repo
 
 /**
  * Created by ahmedrizwan on 9/9/17.
+ * Database
  */
 
-@Database(entities = arrayOf(Repo::class), version = 2, exportSchema = false)
+@Database(entities = arrayOf(Repo::class), version = 4, exportSchema = false)
 abstract class AppDb : RoomDatabase() {
     abstract fun repoDao(): RepoDao
 }
