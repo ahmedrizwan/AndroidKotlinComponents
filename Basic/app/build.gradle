@@ -9,7 +9,7 @@ ext.arch_version = "1.0.0-beta1"
 
 android {
     compileSdkVersion 26
-    buildToolsVersion "26.0.0"
+    buildToolsVersion '26.0.2'
     defaultConfig {
         applicationId "com.snappymob.kotlincomponents"
         minSdkVersion 21
