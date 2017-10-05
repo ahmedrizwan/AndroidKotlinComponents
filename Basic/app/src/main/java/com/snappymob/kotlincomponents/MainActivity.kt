@@ -9,7 +9,6 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.util.ArrayMap
 import android.view.View
-import android.widget.Toast
 import com.snappymob.kotlincomponents.adapters.ReposAdapter
 import com.snappymob.kotlincomponents.db.GithubDb
 import com.snappymob.kotlincomponents.model.Repo
@@ -70,65 +69,36 @@ class MainActivity : AppCompatActivity() {
         recyclerViewRepos.layoutManager = LinearLayoutManager(this)
 
         //search click listener
-        setupSearchListener(reposAdapter)
+        setupSearchListener(reposAdapter, savedInstanceState)
 
-        //state recovery using viewModel
-        recoverState(savedInstanceState, reposAdapter)
     }
 
-    private fun setupSearchListener(reposAdapter: ReposAdapter) {
+    private fun setupSearchListener(reposAdapter: ReposAdapter, savedInstanceState: Bundle?) {
         buttonSearch.setOnClickListener({
-            if (editTextUser.text.length > 3) {
-                repoViewModel.loadRepos(editTextUser.text.toString())?.observe(this, Observer {
-                    it?.let {
-                        textViewError.visibility = View.GONE
-                        progressBar.visibility = View.GONE
-                        reposAdapter.updateDataSet(ArrayList())
-                        when (it.status) {
-                            Status.SUCCESS -> {
-                                recyclerViewRepos.visibility = View.VISIBLE
-                                reposAdapter.updateDataSet(it.data as ArrayList<Repo>)
-                            }
-                            Status.ERROR -> {
-                                textViewError.visibility = View.VISIBLE
-                                textViewError.text = it.message
-                            }
-                            Status.LOADING -> {
-                                progressBar.visibility = View.VISIBLE
-                            }
-                        }
-                    }
-                })
-            } else {
-                Toast.makeText(this, "Repo name must be > 3 length", Toast.LENGTH_SHORT).show()
-            }
+            repoViewModel.setQuery(editTextUser.text.toString())
         })
-    }
-
-    private fun recoverState(savedInstanceState: Bundle?, reposAdapter: ReposAdapter) {
         val currentUserName = savedInstanceState?.get(USER_STATE_KEY) as String?
-        currentUserName?.let {
-            repoViewModel.loadRepos(it)?.observe(this, Observer {
-                it?.let {
-                    textViewError.visibility = View.GONE
-                    progressBar.visibility = View.GONE
-                    reposAdapter.updateDataSet(ArrayList())
-                    when (it.status) {
-                        Status.SUCCESS -> {
-                            recyclerViewRepos.visibility = View.VISIBLE
-                            reposAdapter.updateDataSet(it.data as ArrayList<Repo>)
-                        }
-                        Status.ERROR -> {
-                            textViewError.visibility = View.VISIBLE
-                            textViewError.text = it.message
-                        }
-                        Status.LOADING -> {
-                            progressBar.visibility = View.VISIBLE
-                        }
+        repoViewModel.setQuery(currentUserName)
+        repoViewModel.results.observe(this, Observer {
+            it?.let {
+                textViewError.visibility = View.GONE
+                progressBar.visibility = View.GONE
+                reposAdapter.updateDataSet(ArrayList())
+                when (it.status) {
+                    Status.SUCCESS -> {
+                        recyclerViewRepos.visibility = View.VISIBLE
+                        reposAdapter.updateDataSet(it.data as ArrayList<Repo>)
+                    }
+                    Status.ERROR -> {
+                        textViewError.visibility = View.VISIBLE
+                        textViewError.text = it.message
+                    }
+                    Status.LOADING -> {
+                        progressBar.visibility = View.VISIBLE
                     }
                 }
-            })
-        }
+            }
+        })
     }
 
     //save state

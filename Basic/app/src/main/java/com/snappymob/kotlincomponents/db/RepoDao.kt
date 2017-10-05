@@ -23,7 +23,7 @@ abstract class RepoDao {
     abstract fun load(login: String, name: String): LiveData<Repo>
 
     @Query("SELECT * FROM Repo "
-            + "WHERE owner_login = :arg0 "
+            + "WHERE lower(owner_login) = lower(:arg0)"
             + "ORDER BY stars DESC")
     abstract fun loadRepositories(owner: String): LiveData<List<Repo>>
 
