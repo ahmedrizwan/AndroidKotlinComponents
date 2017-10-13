@@ -9,6 +9,6 @@ import com.snappymob.kotlincomponents.model.Repo
  */
 
 @Database(entities = arrayOf(Repo::class), version = 2, exportSchema = false)
-abstract class GithubDb : RoomDatabase() {
+abstract class AppDb : RoomDatabase() {
     abstract fun repoDao(): RepoDao
 }
