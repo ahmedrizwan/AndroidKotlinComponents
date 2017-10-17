@@ -2,7 +2,7 @@ package com.snappymob.kotlincomponents.viewmodel
 
 import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProvider
-import android.util.ArrayMap
+import android.support.v4.util.ArrayMap
 
 /**
  * Created by ahmedrizwan on 9/9/17.
