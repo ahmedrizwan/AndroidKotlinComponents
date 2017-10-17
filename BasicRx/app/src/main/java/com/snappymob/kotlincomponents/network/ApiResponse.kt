@@ -6,6 +6,10 @@ import retrofit2.Response
 import java.io.IOException
 import java.util.regex.Pattern
 
+/**
+ * Created by ahmedrizwan on 9/9/17.
+ * A wrapper class for API Response - extracts error messages etc
+ */
 class ApiResponse<T> {
     val code: Int
     val body: T?

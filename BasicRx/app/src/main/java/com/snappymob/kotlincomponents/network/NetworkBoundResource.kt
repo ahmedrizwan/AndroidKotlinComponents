@@ -9,7 +9,7 @@ import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 
 abstract class NetworkBoundResource<ResultType, RequestType> @MainThread
-constructor(private val appExecutors: AppExecutors) {
+constructor(private val appThreadExecutors: AppThreadExecutors) {
 
     private val result = PublishSubject.create<Resource<ResultType>>()
 
@@ -36,26 +36,26 @@ constructor(private val appExecutors: AppExecutors) {
         //send a loading event
         result.onNext(Resource.loading(null))
         apiResponse
-                .subscribeOn(Schedulers.from(appExecutors.networkIO()))
-                .observeOn(Schedulers.from(appExecutors.mainThread()))
+                .subscribeOn(Schedulers.from(appThreadExecutors.networkIO()))
+                .observeOn(Schedulers.from(appThreadExecutors.mainThread()))
                 .take(1)
                 .subscribe({ response ->
 
                     //unsubscribe apiResponse and dbSource (if any)
                     apiResponse.unsubscribeOn(Schedulers.io())
 
-                    appExecutors
+                    appThreadExecutors
                             .diskIO()
                             .execute {
                                 saveCallResult(response)
-                                appExecutors.mainThread()
+                                appThreadExecutors.mainThread()
                                         .execute {
                                             // we specially request a new live data,
                                             // otherwise we will get immediately last cached value,
                                             // which may not be updated with latest results received from network.
                                             val dbSource = loadFromDb()
-                                            dbSource.subscribeOn(Schedulers.from(appExecutors.networkIO()))
-                                                    .observeOn(Schedulers.from(appExecutors.mainThread()))
+                                            dbSource.subscribeOn(Schedulers.from(appThreadExecutors.networkIO()))
+                                                    .observeOn(Schedulers.from(appThreadExecutors.mainThread()))
                                                     .take(1)
                                                     .subscribe({
                                                         dbSource.unsubscribeOn(Schedulers.io())

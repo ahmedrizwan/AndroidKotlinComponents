@@ -12,7 +12,7 @@ android {
     defaultConfig {
         //TODO: Update applicationId
         applicationId "com.snappymob.kotlincomponents"
-        minSdkVersion 21
+        minSdkVersion 16
         targetSdkVersion 26
         versionCode 1
         versionName "1.0"

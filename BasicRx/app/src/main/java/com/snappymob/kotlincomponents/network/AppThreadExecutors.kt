@@ -6,9 +6,16 @@ import android.os.Looper
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 
-class AppExecutors @JvmOverloads constructor(private val diskIO: Executor = Executors.newSingleThreadExecutor(),
-                                             private val networkIO: Executor = Executors.newFixedThreadPool(3),
-                                             private val mainThread: Executor = MainThreadExecutor()) {
+/**
+ * Global executor pools for the whole application.
+ *
+ *
+ * Grouping tasks like this avoids the effects of task starvation (e.g. disk reads don't wait behind
+ * webservice requests).
+ */
+class AppThreadExecutors @JvmOverloads constructor(private val diskIO: Executor = Executors.newSingleThreadExecutor(),
+                                                   private val networkIO: Executor = Executors.newFixedThreadPool(3),
+                                                   private val mainThread: Executor = MainThreadExecutor()) {
 
     fun diskIO(): Executor {
         return diskIO

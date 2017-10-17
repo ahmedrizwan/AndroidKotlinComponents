@@ -1,40 +1,44 @@
 package com.snappymob.kotlincomponents.viewmodel
 
+import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.Transformations
 import android.arch.lifecycle.ViewModel
-import android.util.ArrayMap
+import com.snappymob.kotlincomponents.model.Repo
 import com.snappymob.kotlincomponents.network.AbsentLiveData
+import com.snappymob.kotlincomponents.network.Resource
 import com.snappymob.kotlincomponents.repository.RepoRepository
+import java.util.*
 
 
 /**
  * Created by ahmedrizwan on 9/10/17.
+ * ViewModel for the Repos
+ * TODO: Change/Add/Remove ViewModels in this package!
  */
-class RepoViewModel constructor(val repoRepository: RepoRepository):ViewModel() {
+class RepoViewModel constructor(private val repository: RepoRepository):ViewModel() {
 
-    val map: ArrayMap<String, RepoLiveData> = ArrayMap()
+    var currentRepoUser: String? = null
+    val results: LiveData<Resource<List<Repo>>>
 
-    var query: MutableLiveData<String> = MutableLiveData()
+    private val query: MutableLiveData<String> = MutableLiveData()
 
     init {
-       Transformations.switchMap(query,
-               { search ->
-                   if(search==null || search.trim().length==0){
-                        AbsentLiveData.create<RepoLiveData>()
-                   } else {
-                       repoRepository.loadRepos(search)
-                   }
-               }
-       )
+        results = Transformations.switchMap(query, {
+            when {
+                it == null || it.length == 1 -> AbsentLiveData.create(repository)
+                else -> RepoLiveData(repository, it)
+            }
+        })
     }
 
-    fun loadRepos(username: String): RepoLiveData? {
-        query = username
-        if (map[query] == null) {
-            map[query] = RepoLiveData(repoRepository, owner = username)
+    fun setQuery(originalInput: String?, force:Boolean) {
+        if(originalInput==null) return
+        val input = originalInput.toLowerCase(Locale.getDefault()).trim { it <= ' ' }
+        if (input == query.value && !force) {
+            return
         }
-        return map[username]
+        query.value = input
     }
 
 }

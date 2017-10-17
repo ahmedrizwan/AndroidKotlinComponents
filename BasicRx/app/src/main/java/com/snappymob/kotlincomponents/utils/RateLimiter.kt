@@ -1,11 +1,16 @@
 package com.snappymob.kotlincomponents.utils
 
 import android.os.SystemClock
-import android.util.ArrayMap
+import android.support.v4.util.ArrayMap
 
 import java.util.concurrent.TimeUnit
 
-class RateLimiter<in KEY>(timeout: Int, timeUnit: TimeUnit) {
+/**
+ * Created by ahmedrizwan on 9/9/17.
+ * Helper class for managing refresh rate
+ * link: https://github.com/googlesamples/android-architecture-components/tree/master/GithubBrowserSample
+ */
+class RateLimiter<KEY>(timeout: Int, timeUnit: TimeUnit) {
     private val timestamps = ArrayMap<KEY, Long>()
     private val timeout: Long = timeUnit.toMillis(timeout.toLong())
 

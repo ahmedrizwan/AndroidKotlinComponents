@@ -1,16 +1,20 @@
 package com.snappymob.kotlincomponents.network
 
-import android.arch.lifecycle.LiveData
+import com.snappymob.kotlincomponents.repository.RepoRepository
+import com.snappymob.kotlincomponents.viewmodel.RepoLiveData
 
-class AbsentLiveData<T> private constructor() : LiveData<T>() {
+/**
+ * Created by ahmedrizwan on 9/9/17.
+ * Helper class for transmitting an empty LiveData - Pretty useful!
+ */
+class AbsentLiveData private constructor(repository: RepoRepository, string: String) : RepoLiveData(repository, string) {
     init {
         postValue(null)
     }
 
     companion object {
-        fun <T> create(): LiveData<T> {
-
-            return AbsentLiveData()
+        fun create(repository: RepoRepository): AbsentLiveData {
+            return AbsentLiveData(repository, "")
         }
     }
 }

@@ -10,7 +10,7 @@ import io.reactivex.disposables.Disposable
  * Created by ahmedrizwan on 9/18/17.
  */
 
-class RepoLiveData(repoRepository: RepoRepository, val owner:String):
+open class RepoLiveData(repoRepository: RepoRepository, owner:String):
         LiveData<Resource<List<Repo>>>() {
     private var disposable: Disposable? = null
 

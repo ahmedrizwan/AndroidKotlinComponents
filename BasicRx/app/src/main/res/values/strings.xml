@@ -1,3 +1,4 @@
 <resources>
+    <!--TODO: Update App Name -->
     <string name="app_name">BasicRx</string>
 </resources>
