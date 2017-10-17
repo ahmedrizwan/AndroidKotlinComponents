@@ -38,7 +38,7 @@ class ApiResponse<T> {
                 }
 
             }
-            if (message == null || message.trim { it <= ' ' }.length == 0) {
+            if (message == null || message.trim { it <= ' ' }.isEmpty()) {
                 message = response.message()
             }
             errorMessage = message

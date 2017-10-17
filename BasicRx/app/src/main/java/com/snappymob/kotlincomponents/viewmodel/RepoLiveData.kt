@@ -8,8 +8,8 @@ import io.reactivex.disposables.Disposable
 
 /**
  * Created by ahmedrizwan on 9/18/17.
+ * Rx to LiveData binder
  */
-
 open class RepoLiveData(repoRepository: RepoRepository, owner:String):
         LiveData<Resource<List<Repo>>>() {
     private var disposable: Disposable? = null
@@ -27,5 +27,4 @@ open class RepoLiveData(repoRepository: RepoRepository, owner:String):
             disposable?.dispose()
         }
     }
-
 }

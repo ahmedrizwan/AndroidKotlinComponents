@@ -2,7 +2,7 @@ package com.snappymob.kotlincomponents.viewmodel
 
 import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProvider
-import android.util.ArrayMap
+import android.support.v4.util.ArrayMap
 
 class ViewModelFactory
 constructor(private val creators: ArrayMap<Class<out ViewModel>, ViewModel>) : ViewModelProvider.Factory {

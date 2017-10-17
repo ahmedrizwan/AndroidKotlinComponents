@@ -12,7 +12,6 @@ import com.snappymob.kotlincomponents.retrofit.WebService
 import com.snappymob.kotlincomponents.utils.RateLimiter
 import java.util.concurrent.TimeUnit
 
-
 /**
  * Created by ahmedrizwan on 9/10/17.
  * Repository class - uses NetworkBoundResource to load data from API

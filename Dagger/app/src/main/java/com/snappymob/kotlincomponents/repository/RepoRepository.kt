@@ -14,7 +14,6 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
 
-
 /**
  * Created by ahmedrizwan on 9/10/17.
  * Repository class - uses NetworkBoundResource to load data from API

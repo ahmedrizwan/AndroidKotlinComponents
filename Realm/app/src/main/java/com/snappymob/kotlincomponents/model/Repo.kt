@@ -1,27 +1,39 @@
 package com.snappymob.kotlincomponents.model
 
+import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
-import io.realm.RealmModel
+import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
 import io.realm.annotations.RealmClass
 
+/**
+ * Created by ahmedrizwan on 9/9/17.
+ * Realm Model Class for Repo
+ * TODO: Update/Change/Add realm model classes in this package
+ */
 @RealmClass
-open class Repo(
-        @PrimaryKey
-        var id: Int = 0,
+open class Repo : RealmObject() {
+    @Expose
+    @PrimaryKey
+    open var id: Int = 0
 
-        @SerializedName("name")
-        var name: String? = "",
+    @Expose
+    @SerializedName("name")
+    open var name: String? = null
 
-        @SerializedName("full_name")
-        var fullName: String? = "",
+    @Expose
+    @SerializedName("full_name")
+    open var fullName: String? = null
 
-        @SerializedName("description")
-        var description: String? = "",
+    @Expose
+    @SerializedName("description")
+    open var description: String? = null
 
-        @SerializedName("owner")
-        var owner: Owner? = null,
+//    @Expose
+//    @SerializedName("owner")
+//    open var owner: Owner? = null
 
-        @SerializedName("stargazers_count")
-        var stars: Int = 0
-) : RealmModel
+    @Expose
+    @SerializedName("stargazers_count")
+    open var stars: Int? = null
+}

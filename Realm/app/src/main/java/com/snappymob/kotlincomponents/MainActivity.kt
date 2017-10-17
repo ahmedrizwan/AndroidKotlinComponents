@@ -3,59 +3,49 @@ package com.snappymob.kotlincomponents
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProviders
+import android.content.Context
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
-import android.util.ArrayMap
+import android.support.v7.widget.RecyclerView
 import android.view.View
-import android.widget.Toast
-import com.snappymob.kotlincomponents.adapters.ReposAdapter
+import android.view.ViewGroup
+import android.widget.TextView
 import com.snappymob.kotlincomponents.model.Repo
+import com.snappymob.kotlincomponents.network.AppThreadExecutors
 import com.snappymob.kotlincomponents.network.Status
 import com.snappymob.kotlincomponents.repository.RepoRepository
-import com.snappymob.kotlincomponents.retrofit.GithubService
-import com.snappymob.kotlincomponents.retrofit.LiveDataCallAdapterFactory
-import com.snappymob.kotlincomponents.utils.repoModel
+import com.snappymob.kotlincomponents.utils.repoDao
 import com.snappymob.kotlincomponents.viewmodel.RepoViewModel
 import com.snappymob.kotlincomponents.viewmodel.ViewModelFactory
 import kotlinx.android.synthetic.main.activity_main.*
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 /***
- * Activity that displays a list of Repos
+ * Activity that displays a list of Repos, and also manages state restoration
+ * TODO: Change/Add/Remove according to your requirements
  */
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var repoViewModel: RepoViewModel
+    private lateinit var repoViewModel:RepoViewModel
 
     private val USER_STATE_KEY = "UserName"
-
-    private fun getGithubService(): GithubService {
-        return Retrofit.Builder()
-                .baseUrl("https://api.github.com/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .addCallAdapterFactory(LiveDataCallAdapterFactory())
-                .build()
-                .create(GithubService::class.java)
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val retrofit = getGithubService()
+        //init dependencies
+        val retrofit = Dependencies.getRetrofit()
 
-        val arrayMap = ArrayMap<Class<out ViewModel>, ViewModel>()
+        val db = Dependencies.getDatabase()
 
-        val githubDb = (application as App).db
+        val appExecutors = AppThreadExecutors()
 
-        val appExecutors = (application as App).appExecutors
+        val arrayMap = android.support.v4.util.ArrayMap<Class<out ViewModel>, ViewModel>()
 
-        arrayMap.put(RepoViewModel::class.java, RepoViewModel(RepoRepository(githubDb.repoModel(), retrofit, appExecutors)))
+        arrayMap.put(RepoViewModel::class.java, RepoViewModel(RepoRepository(db.repoDao(), retrofit, appExecutors)))
 
         val factory = ViewModelFactory(arrayMap)
-
         repoViewModel = ViewModelProviders.of(this, factory).get(RepoViewModel::class.java)
 
         val reposAdapter = ReposAdapter(this, ArrayList())
@@ -63,69 +53,40 @@ class MainActivity : AppCompatActivity() {
         recyclerViewRepos.layoutManager = LinearLayoutManager(this)
 
         //search click listener
-        setupSearchListener(reposAdapter)
+        setupSearchListener(reposAdapter, savedInstanceState)
 
-        //state recovery using viewModel
-        recoverState(savedInstanceState, reposAdapter)
     }
 
-    private fun setupSearchListener(reposAdapter: ReposAdapter) {
+    private fun setupSearchListener(reposAdapter: ReposAdapter, savedInstanceState: Bundle?) {
         buttonSearch.setOnClickListener({
-            if (editTextUser.text.length > 3) {
-                repoViewModel.loadRepos(editTextUser.text.toString())?.observe(this, Observer {
-                    it?.let {
-                        textViewError.visibility = View.GONE
-                        progressBar.visibility = View.GONE
-                        reposAdapter.updateDataSet(ArrayList())
-                        when (it.status) {
-                            Status.SUCCESS -> {
-                                recyclerViewRepos.visibility = View.VISIBLE
-                                it.data?.let {
-                                    reposAdapter.updateDataSet(it.toList() as ArrayList<Repo>)
-                                }
-                            }
-                            Status.ERROR -> {
-                                textViewError.visibility = View.VISIBLE
-                                textViewError.text = it.message
-                            }
-                            Status.LOADING -> {
-                                progressBar.visibility = View.VISIBLE
-                            }
-                        }
-                    }
-                })
-            } else {
-                Toast.makeText(this, "Repo name must be > 3 length", Toast.LENGTH_SHORT).show()
-            }
+            repoViewModel.setQuery(editTextUser.text.toString(), reposAdapter.itemCount == 0)
         })
-    }
-
-    private fun recoverState(savedInstanceState: Bundle?, reposAdapter: ReposAdapter) {
         val currentUserName = savedInstanceState?.get(USER_STATE_KEY) as String?
-        currentUserName?.let {
-            repoViewModel.loadRepos(it)?.observe(this, Observer {
-                it?.let {
-                    textViewError.visibility = View.GONE
-                    progressBar.visibility = View.GONE
-                    reposAdapter.updateDataSet(ArrayList())
-                    when (it.status) {
-                        Status.SUCCESS -> {
-                            recyclerViewRepos.visibility = View.VISIBLE
-                            it.data?.let {
-                                reposAdapter.updateDataSet(it.toList() as ArrayList<Repo>)
-                            }
+        repoViewModel.setQuery(currentUserName, reposAdapter.itemCount == 0)
+        repoViewModel.results.observe(this, Observer {
+            it?.let {
+                textViewError.visibility = View.GONE
+                progressBar.visibility = View.GONE
+                reposAdapter.updateDataSet(ArrayList())
+                when (it.status) {
+                    Status.SUCCESS -> {
+                        recyclerViewRepos.visibility = View.VISIBLE
+                        it.data?.let {
+                            list ->
+                            reposAdapter.updateDataSet(ArrayList(list.toList()))
                         }
-                        Status.ERROR -> {
-                            textViewError.visibility = View.VISIBLE
-                            textViewError.text = it.message
-                        }
-                        Status.LOADING -> {
-                            progressBar.visibility = View.VISIBLE
-                        }
+
+                    }
+                    Status.ERROR -> {
+                        textViewError.visibility = View.VISIBLE
+                        textViewError.text = it.message
+                    }
+                    Status.LOADING -> {
+                        progressBar.visibility = View.VISIBLE
                     }
                 }
-            })
-        }
+            }
+        })
     }
 
     //save state
@@ -133,5 +94,33 @@ class MainActivity : AppCompatActivity() {
         super.onSaveInstanceState(outState)
         //get the state from viewModel
         outState?.putString(USER_STATE_KEY, repoViewModel.currentRepoUser)
+    }
+
+    class ReposAdapter(val context: Context, var repos: ArrayList<Repo>) : RecyclerView.Adapter<ReposAdapter.RepoItemViewHolder>() {
+
+        override fun getItemCount(): Int {
+            return repos.size
+        }
+
+        fun updateDataSet(data: ArrayList<Repo>) {
+            repos = data
+            notifyDataSetChanged()
+        }
+
+        override fun onCreateViewHolder(p0: ViewGroup?, p1: Int): RepoItemViewHolder {
+            val textView = TextView(context)
+
+            return RepoItemViewHolder(textView)
+        }
+
+        override fun onBindViewHolder(p0: RepoItemViewHolder, p1: Int) {
+            p0.bind(repos[p1])
+        }
+
+        class RepoItemViewHolder(itemView: View?) : RecyclerView.ViewHolder(itemView) {
+            fun bind(repo: Repo) = with(itemView) {
+                (itemView as TextView).text = repo.name
+            }
+        }
     }
 }

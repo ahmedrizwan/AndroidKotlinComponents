@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">RealmKotlinComponents</string>
+    <!--TODO: Update App Name -->
+    <string name="app_name">Realm</string>
 </resources>
