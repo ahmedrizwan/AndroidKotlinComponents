@@ -2,9 +2,9 @@ package com.snappymob.kotlincomponents.di
 
 import android.app.Application
 import android.arch.persistence.room.Room
-import com.snappymob.kotlincomponents.db.GithubDb
+import com.snappymob.kotlincomponents.db.AppDb
 import com.snappymob.kotlincomponents.db.RepoDao
-import com.snappymob.kotlincomponents.retrofit.GithubService
+import com.snappymob.kotlincomponents.retrofit.WebService
 import com.snappymob.kotlincomponents.retrofit.LiveDataCallAdapterFactory
 import dagger.Module
 import dagger.Provides
@@ -17,25 +17,25 @@ internal class AppModule {
 
     @Singleton
     @Provides
-    fun provideGithubService(): GithubService {
+    fun provideGithubService(): WebService {
         return Retrofit.Builder()
                 .baseUrl("https://api.github.com/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(LiveDataCallAdapterFactory())
                 .build()
-                .create(GithubService::class.java)
+                .create(WebService::class.java)
     }
 
     @Singleton
     @Provides
-    fun provideDb(app: Application): GithubDb {
-        return Room.databaseBuilder(app, GithubDb::class.java, "app-db").build()
+    fun provideDb(app: Application): AppDb {
+        return Room.databaseBuilder(app, AppDb::class.java, "app-db").build()
     }
 
 
     @Singleton
     @Provides
-    fun provideRepoDao(db: GithubDb): RepoDao {
+    fun provideRepoDao(db: AppDb): RepoDao {
         return db.repoDao()
     }
 

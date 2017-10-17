@@ -8,7 +8,7 @@ import com.snappymob.kotlincomponents.network.ApiResponse
 import com.snappymob.kotlincomponents.network.AppThreadExecutors
 import com.snappymob.kotlincomponents.network.NetworkBoundResource
 import com.snappymob.kotlincomponents.network.Resource
-import com.snappymob.kotlincomponents.retrofit.GithubService
+import com.snappymob.kotlincomponents.retrofit.WebService
 import com.snappymob.kotlincomponents.utils.RateLimiter
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -17,11 +17,12 @@ import javax.inject.Singleton
 
 /**
  * Created by ahmedrizwan on 9/10/17.
- *
+ * Repository class - uses NetworkBoundResource to load data from API
+ * TODO: Change/Add/Remove Repository files in this package
  */
 @Singleton
 class RepoRepository
-@Inject constructor(val repoDao: RepoDao, val githubService: GithubService, val appThreadExecutors: AppThreadExecutors) {
+@Inject constructor(val repoDao: RepoDao, val webService: WebService, val appThreadExecutors: AppThreadExecutors) {
     val repoListRateLimit = RateLimiter<String>(10, TimeUnit.MINUTES)
 
     fun loadRepos(owner: String): LiveData<Resource<List<Repo>>> {
@@ -39,7 +40,7 @@ class RepoRepository
             }
 
             override fun createCall(): LiveData<ApiResponse<List<Repo>>> {
-                return githubService.getRepos(owner)
+                return webService.getRepos(owner)
             }
 
             override fun onFetchFailed() {

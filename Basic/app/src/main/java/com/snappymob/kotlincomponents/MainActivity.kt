@@ -13,7 +13,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.snappymob.kotlincomponents.model.Repo
-import com.snappymob.kotlincomponents.network.AppExecutors
+import com.snappymob.kotlincomponents.network.AppThreadExecutors
 import com.snappymob.kotlincomponents.network.Status
 import com.snappymob.kotlincomponents.repository.RepoRepository
 import com.snappymob.kotlincomponents.viewmodel.RepoViewModel
@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity() {
 
         val db = Dependencies.getDatabase(applicationContext)
 
-        val appExecutors = AppExecutors()
+        val appExecutors = AppThreadExecutors()
 
         val arrayMap = ArrayMap<Class<out ViewModel>, ViewModel>()
 

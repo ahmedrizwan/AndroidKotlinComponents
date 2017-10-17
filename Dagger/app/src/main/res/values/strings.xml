@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">KotlinComponentsDagger</string>
+    <!--TODO: Update App Name -->
+    <string name="app_name">Dagger</string>
 </resources>

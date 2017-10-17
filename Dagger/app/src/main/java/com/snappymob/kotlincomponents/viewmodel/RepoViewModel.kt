@@ -14,8 +14,9 @@ import javax.inject.Inject
 
 /**
  * Created by ahmedrizwan on 9/10/17.
+ * ViewModel for the Repos
+ * TODO: Change/Add/Remove ViewModels in this package!
  */
-
 class RepoViewModel
 @Inject constructor(repository: RepoRepository) : ViewModel() {
 //    val repoRepository = repository
@@ -35,10 +36,10 @@ class RepoViewModel
         })
     }
 
-    fun setQuery(originalInput: String?) {
+    fun setQuery(originalInput: String?, force:Boolean) {
         if(originalInput==null) return
         val input = originalInput.toLowerCase(Locale.getDefault()).trim { it <= ' ' }
-        if (Objects.equals(input, query.value)) {
+        if (input == query.value && !force) {
             return
         }
         query.value = input

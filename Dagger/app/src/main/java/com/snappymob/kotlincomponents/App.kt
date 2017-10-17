@@ -13,9 +13,8 @@ import javax.inject.Inject
 
 /**
  * Created by ahmedrizwan on 9/9/17.
- *
+ * Application class
  */
-
 class App : Application(), HasActivityInjector {
 
     @Inject

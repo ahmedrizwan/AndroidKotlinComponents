@@ -12,8 +12,6 @@ import retrofit2.http.Path
  * TODO: Add your Web Api Endpoints here!
  */
 interface WebService {
-    @GET("users/{user}/repos")
-    fun listRepos(@Path("user") user: String): LiveData<ApiResponse<List<Repo>>>
 
     @GET("users/{login}/repos")
     fun getRepos(@Path("login") login: String): LiveData<ApiResponse<List<Repo>>>

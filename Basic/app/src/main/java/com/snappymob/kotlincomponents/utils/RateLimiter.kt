@@ -12,11 +12,7 @@ import java.util.concurrent.TimeUnit
  */
 class RateLimiter<KEY>(timeout: Int, timeUnit: TimeUnit) {
     private val timestamps = ArrayMap<KEY, Long>()
-    private val timeout: Long
-
-    init {
-        this.timeout = timeUnit.toMillis(timeout.toLong())
-    }
+    private val timeout: Long = timeUnit.toMillis(timeout.toLong())
 
     @Synchronized
     fun shouldFetch(key: KEY): Boolean {

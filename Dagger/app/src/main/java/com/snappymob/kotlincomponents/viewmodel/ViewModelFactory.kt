@@ -22,6 +22,11 @@ import javax.inject.Inject
 import javax.inject.Provider
 import javax.inject.Singleton
 
+/**
+ * Created by ahmedrizwan on 9/9/17.
+ * Helper ViewModelFactory for generating ViewModels
+ * link: https://github.com/googlesamples/android-architecture-components/tree/master/GithubBrowserSample
+ */
 @Singleton
 class ViewModelFactory @Inject
 constructor(var creators: MutableMap<Class<out ViewModel>, Provider<ViewModel>>) : ViewModelProvider.Factory {

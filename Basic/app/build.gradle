@@ -4,13 +4,13 @@ apply plugin: 'kotlin-android'
 
 apply plugin: 'kotlin-android-extensions'
 
-ext.dagger_version = "2.11"
-ext.arch_version = "1.0.0-beta1"
+ext.arch_version = "1.0.0-beta2"
 
 android {
     compileSdkVersion 26
     buildToolsVersion '26.0.2'
     defaultConfig {
+        //TODO: Update applicationId
         applicationId "com.snappymob.kotlincomponents"
         minSdkVersion 21
         targetSdkVersion 26
