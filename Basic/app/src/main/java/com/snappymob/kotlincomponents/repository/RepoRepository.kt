@@ -8,16 +8,17 @@ import com.snappymob.kotlincomponents.network.ApiResponse
 import com.snappymob.kotlincomponents.network.AppExecutors
 import com.snappymob.kotlincomponents.network.NetworkBoundResource
 import com.snappymob.kotlincomponents.network.Resource
-import com.snappymob.kotlincomponents.retrofit.RetrofitService
+import com.snappymob.kotlincomponents.retrofit.WebService
 import com.snappymob.kotlincomponents.utils.RateLimiter
 import java.util.concurrent.TimeUnit
 
 
 /**
  * Created by ahmedrizwan on 9/10/17.
- *
+ * Repository class - uses NetworkBoundResource to load data from API
+ * TODO: Change/Add/Remove Repository files in this package
  */
-class RepoRepository(val repoDao: RepoDao, val retrofitService: RetrofitService, val appExecutors: AppExecutors) {
+class RepoRepository(val repoDao: RepoDao, val webService: WebService, val appExecutors: AppExecutors) {
     val repoListRateLimit = RateLimiter<String>(10, TimeUnit.MINUTES)
 
     fun loadRepos(owner: String): LiveData<Resource<List<Repo>>> {
@@ -35,7 +36,7 @@ class RepoRepository(val repoDao: RepoDao, val retrofitService: RetrofitService,
             }
 
             override fun createCall(): LiveData<ApiResponse<List<Repo>>> {
-                return retrofitService.getRepos(owner)
+                return webService.getRepos(owner)
             }
 
             override fun onFetchFailed() {

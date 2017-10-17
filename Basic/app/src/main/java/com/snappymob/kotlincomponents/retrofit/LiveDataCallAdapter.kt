@@ -9,6 +9,11 @@ import retrofit2.Response
 import java.lang.reflect.Type
 import java.util.concurrent.atomic.AtomicBoolean
 
+/**
+ * Created by ahmedrizwan on 9/9/17.
+ * Live Data Call Adapter for Retrofit
+ * link: https://github.com/googlesamples/android-architecture-components/tree/master/GithubBrowserSample
+ */
 class LiveDataCallAdapter<R>(private val responseType: Type) : CallAdapter<R, LiveData<ApiResponse<R>>> {
 
     override fun responseType(): Type {

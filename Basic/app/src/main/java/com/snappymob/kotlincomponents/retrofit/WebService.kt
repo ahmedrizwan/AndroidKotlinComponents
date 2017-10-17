@@ -6,13 +6,12 @@ import com.snappymob.kotlincomponents.network.ApiResponse
 import retrofit2.http.GET
 import retrofit2.http.Path
 
-
-
-
 /**
  * Created by ahmedrizwan on 9/9/17.
+ * Retrofit Service class
+ * TODO: Add your Web Api Endpoints here!
  */
-interface RetrofitService {
+interface WebService {
     @GET("users/{user}/repos")
     fun listRepos(@Path("user") user: String): LiveData<ApiResponse<List<Repo>>>
 

@@ -13,14 +13,13 @@ import java.util.*
 
 /**
  * Created by ahmedrizwan on 9/10/17.
+ * ViewModel for the Repos
+ * TODO: Change/Add/Remove ViewModels in this package!
  */
 class RepoViewModel constructor(repository: RepoRepository) : ViewModel() {
-    //    val repoRepository = repository
-//    val map: ArrayMap<String, LiveData<Resource<List<Repo>>>> = ArrayMap()
     var currentRepoUser: String? = null
-
-    //live data of list of Repos, called results
     val results: LiveData<Resource<List<Repo>>>
+
     private val query: MutableLiveData<String> = MutableLiveData()
 
     init {
@@ -32,10 +31,10 @@ class RepoViewModel constructor(repository: RepoRepository) : ViewModel() {
         })
     }
 
-    fun setQuery(originalInput: String?) {
+    fun setQuery(originalInput: String?, force:Boolean) {
         if(originalInput==null) return
         val input = originalInput.toLowerCase(Locale.getDefault()).trim { it <= ' ' }
-        if (Objects.equals(input, query.value)) {
+        if (input == query.value && !force) {
             return
         }
         query.value = input

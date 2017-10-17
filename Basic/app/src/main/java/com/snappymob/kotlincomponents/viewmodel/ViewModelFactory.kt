@@ -4,6 +4,11 @@ import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProvider
 import android.util.ArrayMap
 
+/**
+ * Created by ahmedrizwan on 9/9/17.
+ * Helper ViewModelFactory for generating ViewModels
+ * link: https://github.com/googlesamples/android-architecture-components/tree/master/GithubBrowserSample
+ */
 class ViewModelFactory
 constructor(private val creators: ArrayMap<Class<out ViewModel>, ViewModel>) : ViewModelProvider.Factory {
 

@@ -3,12 +3,15 @@ package com.snappymob.kotlincomponents
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProviders
+import android.content.Context
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.util.ArrayMap
 import android.view.View
-import com.snappymob.kotlincomponents.adapters.ReposAdapter
+import android.view.ViewGroup
+import android.widget.TextView
 import com.snappymob.kotlincomponents.model.Repo
 import com.snappymob.kotlincomponents.network.AppExecutors
 import com.snappymob.kotlincomponents.network.Status
@@ -18,7 +21,8 @@ import com.snappymob.kotlincomponents.viewmodel.ViewModelFactory
 import kotlinx.android.synthetic.main.activity_main.*
 
 /***
- * Activity that displays a list of Repos
+ * Activity that displays a list of Repos, and also manages state restoration
+ * TODO: Change/Add/Remove according to your requirements
  */
 class MainActivity : AppCompatActivity() {
 
@@ -55,10 +59,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupSearchListener(reposAdapter: ReposAdapter, savedInstanceState: Bundle?) {
         buttonSearch.setOnClickListener({
-            repoViewModel.setQuery(editTextUser.text.toString())
+            repoViewModel.setQuery(editTextUser.text.toString(), reposAdapter.itemCount == 0)
         })
         val currentUserName = savedInstanceState?.get(USER_STATE_KEY) as String?
-        repoViewModel.setQuery(currentUserName)
+        repoViewModel.setQuery(currentUserName, reposAdapter.itemCount == 0)
         repoViewModel.results.observe(this, Observer {
             it?.let {
                 textViewError.visibility = View.GONE
@@ -86,5 +90,33 @@ class MainActivity : AppCompatActivity() {
         super.onSaveInstanceState(outState)
         //get the state from viewModel
         outState?.putString(USER_STATE_KEY, repoViewModel.currentRepoUser)
+    }
+
+    class ReposAdapter(val context: Context, var repos: ArrayList<Repo>) : RecyclerView.Adapter<ReposAdapter.RepoItemViewHolder>() {
+
+        override fun getItemCount(): Int {
+            return repos.size
+        }
+
+        fun updateDataSet(data: ArrayList<Repo>) {
+            repos = data
+            notifyDataSetChanged()
+        }
+
+        override fun onCreateViewHolder(p0: ViewGroup?, p1: Int): RepoItemViewHolder {
+            val textView = TextView(context)
+
+            return RepoItemViewHolder(textView)
+        }
+
+        override fun onBindViewHolder(p0: RepoItemViewHolder, p1: Int) {
+            p0.bind(repos[p1])
+        }
+
+        class RepoItemViewHolder(itemView: View?) : RecyclerView.ViewHolder(itemView) {
+            fun bind(repo: Repo) = with(itemView) {
+                (itemView as TextView).text = repo.name
+            }
+        }
     }
 }

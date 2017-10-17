@@ -6,6 +6,11 @@ import android.arch.persistence.room.Index
 import android.support.annotation.NonNull
 import com.google.gson.annotations.SerializedName
 
+/**
+ * Created by ahmedrizwan on 9/9/17.
+ * Model Class for Repo
+ * TODO: Update/Change/Add model classes in this package
+ */
 @Entity(indices = arrayOf(Index("id"),
         Index("owner_login")),
         primaryKeys = arrayOf("name","owner_login"))
