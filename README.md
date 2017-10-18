@@ -1,7 +1,7 @@
 # Android Kotlin Components
 Starter boilerplate projects for Android, with Components Architecture implemented, written completely in Kotlin. Variations include Rx, Realm & Dagger usage.
 
-[Explanation Article Here](https://medium.com/@ahmedrizwan/kotlin-boilerplates-android-architecture-components-with-rx-dagger-realm-c49bb5d66d8)
+[Medium Article](https://medium.com/@ahmedrizwan/kotlin-boilerplates-android-architecture-components-with-rx-dagger-realm-c49bb5d66d8)
 
 ## Basic Version 
 Fetches Repositories from Github API 
