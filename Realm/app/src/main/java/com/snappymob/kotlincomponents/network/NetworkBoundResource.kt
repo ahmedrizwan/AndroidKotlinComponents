@@ -20,10 +20,14 @@ constructor(private val appThreadExecutors: AppThreadExecutors) {
 
     init {
         val dbSource = loadFromDb()
-        if (shouldFetch(dbSource.value)) {
-            fetchFromNetwork(dbSource)
-        } else {
-            result.addSource(dbSource) { rT -> result.value = Resource.success(rT) }
+
+        result.addSource(dbSource){ resultType->
+            result.removeSource(dbSource)
+            if (shouldFetch(resultType)) {
+                fetchFromNetwork(dbSource)
+            } else {
+                result.addSource(dbSource) { rT -> result.value = Resource.success(rT) }
+            }
         }
     }
 

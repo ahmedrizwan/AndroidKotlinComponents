@@ -48,6 +48,7 @@ dependencies {
     //Lifecycle
     implementation "android.arch.lifecycle:runtime:$arch_version"
     implementation "android.arch.lifecycle:extensions:$arch_version"
-    kapt "android.arch.lifecycle:compiler:$arch_version"}
+    kapt "android.arch.lifecycle:compiler:$arch_version"
+}
 
 

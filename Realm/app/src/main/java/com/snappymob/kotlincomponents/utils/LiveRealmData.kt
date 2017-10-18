@@ -11,10 +11,13 @@ import io.realm.RealmResults
  * Realm as LiveData for observing changes
  */
 class LiveRealmData<T : RealmModel>(private val results: RealmResults<T>) : LiveData<RealmResults<T>>() {
-    private val listener = RealmChangeListener<RealmResults<T>> { results -> value = results }
+    private val listener = RealmChangeListener<RealmResults<T>> {
+        results -> value = results
+    }
 
     override fun onActive() {
         results.addChangeListener(listener)
+        value = results
     }
 
     override fun onInactive() {

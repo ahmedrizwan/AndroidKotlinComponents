@@ -22,7 +22,7 @@ constructor(private val appThreadExecutors: AppThreadExecutors) {
             if (shouldFetch(resultType)) {
                 fetchFromNetwork(dbSource)
             } else {
-                result.addSource(dbSource) { resultType -> result.value = Resource.success(resultType) }
+                result.addSource(dbSource) { rT -> result.value = Resource.success(rT) }
             }
         }
     }

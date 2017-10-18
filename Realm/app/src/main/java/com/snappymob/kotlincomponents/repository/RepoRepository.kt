@@ -24,7 +24,7 @@ class RepoRepository(val repoDao: RepoDao, val webService: WebService, val appTh
     fun loadRepos(owner: String): LiveData<Resource<RealmResults<Repo>>> {
         return object : NetworkBoundResource<Repo, List<Repo>>(appThreadExecutors) {
             override fun saveCallResult(item: List<Repo>) {
-                repoDao.insertRepos(item)
+                repoDao.insertRepos(ArrayList(item))
             }
 
             override fun shouldFetch(data: RealmResults<Repo>?): Boolean {
