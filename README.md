@@ -7,7 +7,7 @@ Starter boilerplate projects for Android, with Components Architecture implement
 Fetches Repositories from Github API 
 - Rest API -> Retrofit 
 - Database -> Room 
-- Some cool Helper Classes based on [GithubBrowserExample](https://github.com/googlesamples/android-architecture-components)
+- Based on [GithubBrowserExample](https://github.com/googlesamples/android-architecture-components)
 - And a simple MainActivity that queries & shows the list of Repos
 
 ## BasicRx Version
