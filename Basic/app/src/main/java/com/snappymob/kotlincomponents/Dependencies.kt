@@ -14,20 +14,18 @@ import retrofit2.converter.gson.GsonConverterFactory
  */
 object Dependencies {
 
-    var webService: WebService? = null
+    var webService: WebService = Retrofit.Builder()
+            //TODO: Update Api URL
+            .baseUrl("https://api.github.com/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .addCallAdapterFactory(LiveDataCallAdapterFactory())
+            .build()
+            .create(WebService::class.java)
+
     var db: AppDb? = null
 
     fun getRetrofit(): WebService {
-        if (webService == null) {
-            webService = Retrofit.Builder()
-                    //TODO: Update Api URL
-                    .baseUrl("https://api.github.com/")
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .addCallAdapterFactory(LiveDataCallAdapterFactory())
-                    .build()
-                    .create(WebService::class.java)
-        }
-        return webService!!
+        return webService
     }
 
     fun getDatabase(context: Context): AppDb {

@@ -16,29 +16,26 @@ import retrofit2.converter.gson.GsonConverterFactory
  */
 object Dependencies {
 
-    private var webService: WebService? = null
+    private val gson = GsonBuilder().setExclusionStrategies(object : ExclusionStrategy {
+        override fun shouldSkipField(f: FieldAttributes): Boolean {
+            return f.declaringClass == RealmObject::class.java
+        }
+
+        override fun shouldSkipClass(clazz: Class<*>): Boolean {
+            return false
+        }
+    }).create()
+
+    private var webService: WebService = Retrofit.Builder()
+            //TODO: Update Api URL
+            .baseUrl("https://api.github.com/")
+            .addConverterFactory(GsonConverterFactory.create(gson))
+            .addCallAdapterFactory(LiveDataCallAdapterFactory())
+            .build()
+            .create(WebService::class.java)
 
     fun getRetrofit(): WebService {
-        if (webService == null) {
-            val gson = GsonBuilder().setExclusionStrategies(object : ExclusionStrategy {
-                override fun shouldSkipField(f: FieldAttributes): Boolean {
-                    return f.declaringClass == RealmObject::class.java
-                }
-
-                override fun shouldSkipClass(clazz: Class<*>): Boolean {
-                    return false
-                }
-            }).create()
-
-            webService = Retrofit.Builder()
-                    //TODO: Update Api URL
-                    .baseUrl("https://api.github.com/")
-                    .addConverterFactory(GsonConverterFactory.create(gson))
-                    .addCallAdapterFactory(LiveDataCallAdapterFactory())
-                    .build()
-                    .create(WebService::class.java)
-        }
-        return webService!!
+        return webService
     }
 
     fun getDatabase(): Realm {

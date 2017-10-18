@@ -17,10 +17,17 @@ open class Repo : RealmObject() {
 
     var name: String? = null
 
+    @SerializedName("full_name")
+    var fullName: String? = ""
+
+    @SerializedName("description")
+    var description: String? = ""
+
     var owner: Owner? = null
 
     @SerializedName("stargazers_count")
     var stars: Int = 0
+
 }
 
 open class Owner : RealmObject() {
