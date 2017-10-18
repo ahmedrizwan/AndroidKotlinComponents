@@ -20,7 +20,7 @@ Fetches Repositories from Github API
 - Uses Realm instead of Room
 - [Android Architecture and Realm](https://academy.realm.io/posts/android-architecture-components-and-realm/)
 
-*TODOs are added to each project variation for an easy transition into making it your own.*
+*TODOs have been added to each project variation for an easy transition into making it your own.*
 
 ## License 
 ```
