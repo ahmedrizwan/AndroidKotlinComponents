@@ -7,7 +7,7 @@ Starter boilerplate projects for Android, with Components Architecture implement
 Fetches Repositories from Github API 
 - Rest API -> Retrofit 
 - Database -> Room 
-- Some other cool Helper Classes based on [GithubBrowserExample](https://github.com/googlesamples/android-architecture-components)
+- Some cool Helper Classes based on [GithubBrowserExample](https://github.com/googlesamples/android-architecture-components)
 - And a simple MainActivity that queries & shows the list of Repos
 
 ## BasicRx Version
@@ -17,8 +17,8 @@ Fetches Repositories from Github API
 - Basic version but uses Dagger2 for Dependency Injection
 
 ## Realm Version
-- Uses Room instead of Realm
-- Some cool helper classes from [Android Architecture and Realm](https://academy.realm.io/posts/android-architecture-components-and-realm/)
+- Uses Realm instead of Room
+- [Android Architecture and Realm](https://academy.realm.io/posts/android-architecture-components-and-realm/)
 
 *TODOs are added to each project variation for an easy transition into making it your own.*
 
