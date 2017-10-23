@@ -9,7 +9,7 @@ import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 
 abstract class NetworkBoundResource<ResultType, RequestType> @MainThread
-constructor(private val appThreadExecutors: AppThreadExecutors) {
+constructor() {
 
     private val result = PublishSubject.create<Resource<ResultType>>()
 
@@ -30,39 +30,37 @@ constructor(private val appThreadExecutors: AppThreadExecutors) {
                 })
     }
 
-    fun fetchFromNetwork() {
+    private fun fetchFromNetwork() {
         val apiResponse = createCall()
 
         //send a loading event
         result.onNext(Resource.loading(null))
         apiResponse
-                .subscribeOn(Schedulers.from(appThreadExecutors.networkIO()))
-                .observeOn(Schedulers.from(appThreadExecutors.mainThread()))
+                .subscribeOn(Schedulers.from(NETWORK_EXECUTOR))
+                .observeOn(AndroidSchedulers.mainThread())
                 .take(1)
                 .subscribe({ response ->
 
                     //unsubscribe apiResponse and dbSource (if any)
                     apiResponse.unsubscribeOn(Schedulers.io())
 
-                    appThreadExecutors
-                            .diskIO()
-                            .execute {
-                                saveCallResult(response)
-                                appThreadExecutors.mainThread()
-                                        .execute {
-                                            // we specially request a new live data,
-                                            // otherwise we will get immediately last cached value,
-                                            // which may not be updated with latest results received from network.
-                                            val dbSource = loadFromDb()
-                                            dbSource.subscribeOn(Schedulers.from(appThreadExecutors.networkIO()))
-                                                    .observeOn(Schedulers.from(appThreadExecutors.mainThread()))
-                                                    .take(1)
-                                                    .subscribe({
-                                                        dbSource.unsubscribeOn(Schedulers.io())
-                                                        result.onNext(Resource.success(it))
-                                                    })
-                                        }
-                            }
+                    ioThread {
+                        saveCallResult(response)
+                        mainThread {
+                            // we specially request a new live data,
+                            // otherwise we will get immediately last cached value,
+                            // which may not be updated with latest results received from network.
+                            val dbSource = loadFromDb()
+                            dbSource.subscribeOn(Schedulers.from(NETWORK_EXECUTOR))
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .take(1)
+                                    .subscribe({
+                                        dbSource.unsubscribeOn(Schedulers.io())
+                                        result.onNext(Resource.success(it))
+                                    })
+                        }
+                    }
+
                 }, { error ->
                     onFetchFailed()
                     result.onNext(Resource.error(error.localizedMessage, null))

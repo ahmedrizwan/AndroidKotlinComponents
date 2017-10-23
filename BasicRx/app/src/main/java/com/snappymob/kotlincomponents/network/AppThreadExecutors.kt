@@ -13,26 +13,28 @@ import java.util.concurrent.Executors
  * Grouping tasks like this avoids the effects of task starvation (e.g. disk reads don't wait behind
  * webservice requests).
  */
-class AppThreadExecutors @JvmOverloads constructor(private val diskIO: Executor = Executors.newSingleThreadExecutor(),
-                                                   private val networkIO: Executor = Executors.newFixedThreadPool(3),
-                                                   private val mainThread: Executor = MainThreadExecutor()) {
+val IO_EXECUTOR = Executors.newSingleThreadExecutor()
+val NETWORK_EXECUTOR = Executors.newFixedThreadPool(3)
+private val MAIN_EXECUTOR = MainThreadExecutor()
 
-    fun diskIO(): Executor {
-        return diskIO
-    }
+/**
+ * Utility method to run blocks on a dedicated background thread, used for io/database work.
+ */
+fun ioThread(f : () -> Unit) {
+    IO_EXECUTOR.execute(f)
+}
 
-    fun networkIO(): Executor {
-        return networkIO
-    }
+fun networkThread(f: () -> Unit){
+    NETWORK_EXECUTOR.execute(f)
+}
 
-    fun mainThread(): Executor {
-        return mainThread
-    }
+fun mainThread(f: () -> Unit){
+    MAIN_EXECUTOR.execute(f)
+}
 
-    private class MainThreadExecutor : Executor {
-        private val mainThreadHandler = Handler(Looper.getMainLooper())
-        override fun execute(command: Runnable) {
-            mainThreadHandler.post(command)
-        }
+private class MainThreadExecutor : Executor {
+    private val mainThreadHandler = Handler(Looper.getMainLooper())
+    override fun execute(command: Runnable) {
+        mainThreadHandler.post(command)
     }
 }
