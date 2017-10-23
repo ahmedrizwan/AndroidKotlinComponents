@@ -5,7 +5,6 @@ import android.support.annotation.Nullable
 import com.snappymob.kotlincomponents.db.RepoDao
 import com.snappymob.kotlincomponents.model.Repo
 import com.snappymob.kotlincomponents.network.ApiResponse
-import com.snappymob.kotlincomponents.network.AppThreadExecutors
 import com.snappymob.kotlincomponents.network.NetworkBoundResource
 import com.snappymob.kotlincomponents.network.Resource
 import com.snappymob.kotlincomponents.retrofit.WebService
@@ -21,11 +20,11 @@ import javax.inject.Singleton
  */
 @Singleton
 class RepoRepository
-@Inject constructor(val repoDao: RepoDao, val webService: WebService, val appThreadExecutors: AppThreadExecutors) {
+@Inject constructor(val repoDao: RepoDao, val webService: WebService) {
     val repoListRateLimit = RateLimiter<String>(10, TimeUnit.MINUTES)
 
     fun loadRepos(owner: String): LiveData<Resource<List<Repo>>> {
-        return object : NetworkBoundResource<List<Repo>, List<Repo>>(appThreadExecutors) {
+        return object : NetworkBoundResource<List<Repo>, List<Repo>>() {
             override fun saveCallResult(item: List<Repo>) {
                 repoDao.insertRepos(item)
             }
