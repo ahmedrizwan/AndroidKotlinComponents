@@ -4,7 +4,6 @@ import android.arch.lifecycle.LiveData
 import com.snappymob.kotlincomponents.db.RepoDao
 import com.snappymob.kotlincomponents.model.Repo
 import com.snappymob.kotlincomponents.network.ApiResponse
-import com.snappymob.kotlincomponents.network.AppThreadExecutors
 import com.snappymob.kotlincomponents.network.NetworkBoundResource
 import com.snappymob.kotlincomponents.network.Resource
 import com.snappymob.kotlincomponents.retrofit.WebService
@@ -18,11 +17,11 @@ import java.util.concurrent.TimeUnit
  * Repository class - uses NetworkBoundResource to load data from API
  * TODO: Change/Add/Remove Repository files in this package
  */
-class RepoRepository(val repoDao: RepoDao, val webService: WebService, val appThreadExecutors: AppThreadExecutors) {
+class RepoRepository(val repoDao: RepoDao, val webService: WebService) {
     val repoListRateLimit = RateLimiter<String>(10, TimeUnit.MINUTES)
 
     fun loadRepos(owner: String): LiveData<Resource<RealmResults<Repo>>> {
-        return object : NetworkBoundResource<Repo, List<Repo>>(appThreadExecutors) {
+        return object : NetworkBoundResource<Repo, List<Repo>>() {
             override fun saveCallResult(item: List<Repo>) {
                 repoDao.insertRepos(ArrayList(item))
             }

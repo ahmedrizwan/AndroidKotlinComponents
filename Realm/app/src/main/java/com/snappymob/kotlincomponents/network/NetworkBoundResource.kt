@@ -14,7 +14,7 @@ import io.realm.RealmResults
  * link: https://github.com/googlesamples/android-architecture-components/tree/master/GithubBrowserSample
  */
 abstract class NetworkBoundResource<Model : RealmModel, RequestType> @MainThread
-constructor(private val appThreadExecutors: AppThreadExecutors) {
+constructor() {
 
     private val result = MediatorLiveData<Resource<RealmResults<Model>>>()
 
@@ -43,15 +43,14 @@ constructor(private val appThreadExecutors: AppThreadExecutors) {
             result.removeSource(dbSource)
 
             if (response!!.isSuccessful) {
-                processResponse(response)?.let { saveCallResult(it) }
-                appThreadExecutors.mainThread()
-                        .execute {
-                            // we specially request a new live data,
-                            // otherwise we will get immediately last cached value,
-                            // which may not be updated with latest results received from network.
-                            result.addSource(loadFromDb()
-                            ) { resultType -> result.value = Resource.success(resultType) }
-                        }
+                    processResponse(response)?.let { saveCallResult(it) }
+                    mainThread {
+                        // we specially request a new live data,
+                        // otherwise we will get immediately last cached value,
+                        // which may not be updated with latest results received from network.
+                        result.addSource(loadFromDb()
+                        ) { resultType -> result.value = Resource.success(resultType) }
+                    }
             } else {
                 onFetchFailed()
                 result.addSource(dbSource
