@@ -13,7 +13,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.snappymob.kotlincomponents.model.Repo
-import com.snappymob.kotlincomponents.network.AppThreadExecutors
 import com.snappymob.kotlincomponents.network.Status
 import com.snappymob.kotlincomponents.repository.RepoRepository
 import com.snappymob.kotlincomponents.viewmodel.RepoViewModel
@@ -39,11 +38,9 @@ class MainActivity : AppCompatActivity() {
 
         val db = Dependencies.getDatabase(applicationContext)
 
-        val appExecutors = AppThreadExecutors()
-
         val arrayMap = ArrayMap<Class<out ViewModel>, ViewModel>()
 
-        arrayMap.put(RepoViewModel::class.java, RepoViewModel(RepoRepository(db.repoDao(), retrofit, appExecutors)))
+        arrayMap.put(RepoViewModel::class.java, RepoViewModel(RepoRepository(db.repoDao(), retrofit)))
 
         val factory = ViewModelFactory(arrayMap)
         repoViewModel = ViewModelProviders.of(this, factory).get(RepoViewModel::class.java)
