@@ -90,7 +90,7 @@ class MainActivity : AppCompatActivity() {
             notifyDataSetChanged()
         }
 
-        override fun onCreateViewHolder(p0: ViewGroup?, p1: Int): RepoItemViewHolder {
+        override fun onCreateViewHolder(p0: ViewGroup, p1: Int): RepoItemViewHolder {
             val textView = TextView(context)
 
             return RepoItemViewHolder(textView)
