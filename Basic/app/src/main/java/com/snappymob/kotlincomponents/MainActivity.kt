@@ -25,7 +25,7 @@ import kotlinx.android.synthetic.main.activity_main.*
  */
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var repoViewModel:RepoViewModel
+    private lateinit var repoViewModel: RepoViewModel
 
     private val USER_STATE_KEY = "UserName"
 
@@ -89,7 +89,7 @@ class MainActivity : AppCompatActivity() {
         outState?.putString(USER_STATE_KEY, repoViewModel.currentRepoUser)
     }
 
-    class ReposAdapter(val context: Context, var repos: ArrayList<Repo>) : RecyclerView.Adapter<ReposAdapter.RepoItemViewHolder>() {
+    class ReposAdapter(private val context: Context, private var repos: ArrayList<Repo>) : RecyclerView.Adapter<ReposAdapter.RepoItemViewHolder>() {
 
         override fun getItemCount(): Int {
             return repos.size
@@ -100,7 +100,7 @@ class MainActivity : AppCompatActivity() {
             notifyDataSetChanged()
         }
 
-        override fun onCreateViewHolder(p0: ViewGroup?, p1: Int): RepoItemViewHolder {
+        override fun onCreateViewHolder(p0: ViewGroup, p1: Int): RepoItemViewHolder {
             val textView = TextView(context)
 
             return RepoItemViewHolder(textView)
