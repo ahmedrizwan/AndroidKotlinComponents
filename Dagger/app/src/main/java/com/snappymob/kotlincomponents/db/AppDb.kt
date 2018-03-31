@@ -21,7 +21,7 @@ abstract class RepoDao {
     abstract fun insertRepos(repositories: List<Repo>)
 
     @Query("SELECT * FROM Repo "
-            + "WHERE lower(owner_login) = lower(:arg0)"
+            + "WHERE lower(owner_login) = lower(:owner)"
             + "ORDER BY stars DESC")
     abstract fun loadRepositories(owner: String): LiveData<List<Repo>>
 

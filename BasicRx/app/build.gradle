@@ -4,6 +4,8 @@ apply plugin: 'kotlin-android'
 
 apply plugin: 'kotlin-android-extensions'
 
+apply plugin: 'kotlin-kapt'
+
 ext.dagger_version = "2.11"
 ext.support_version = "27.1.0"
 ext.arch_version = "1.1.1"
@@ -50,7 +52,7 @@ dependencies {
     //Room
     implementation "android.arch.persistence.room:runtime:$room_version"
     kapt "android.arch.persistence.room:compiler:$room_version"
-    compile "android.arch.persistence.room:rxjava2:$room_version"
+    implementation "android.arch.persistence.room:rxjava2:$room_version"
 
     //Lifecycle
     implementation "android.arch.lifecycle:runtime:$arch_version"
@@ -58,8 +60,8 @@ dependencies {
     kapt "android.arch.lifecycle:compiler:$arch_version"
 
     //Rx
-    compile 'io.reactivex.rxjava2:rxandroid:2.0.2'
-    compile 'io.reactivex.rxjava2:rxkotlin:2.2.0'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
+    implementation 'io.reactivex.rxjava2:rxkotlin:2.2.0'
 
 }
 
